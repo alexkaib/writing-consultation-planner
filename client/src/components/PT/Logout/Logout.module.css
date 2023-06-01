@@ -1,0 +1,26 @@
+.Logout {
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  padding: 20px 0;
+  background-color: white;
+}
+
+.LogoutText {
+  margin: 0 auto;
+  margin-top: 20px;
+  padding: 0 10px;
+}
+
+@media (max-width: 1200px) and (min-width: 500px) {
+  .Logout {
+    width: 90%;
+  }
+}
+
+@media (max-width: 499px) {
+  .Logout {
+    width: 99%;
+  }
+}

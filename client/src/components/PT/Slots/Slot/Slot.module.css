@@ -1,0 +1,23 @@
+.Slot {
+  height: 6.5vh;
+  background-color: white;
+  display: flex;
+  cursor: pointer;
+}
+
+.Slot button {
+  color: #ea6100;
+  margin: auto;
+  font-size: 1.2rem;
+  background-color: white;
+  border: none;
+}
+
+.Highlighted {
+  background-color: #f98e2a;
+}
+
+.Highlighted button {
+  color: white;
+  background-color: inherit;
+}

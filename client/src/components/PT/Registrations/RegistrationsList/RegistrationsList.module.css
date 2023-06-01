@@ -1,0 +1,27 @@
+.RegistrationsList {
+  width: 80%;
+  min-height: 600px;
+  margin: 0 auto;
+  padding: 10px 0;
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  box-sizing: border-box;
+  text-align: center;
+  background-color: cadetblue;
+  border-radius: 15px;
+}
+
+@media (max-width: 1200px) and (min-width: 500px) {
+  .RegistrationsList {
+    width: 90%;
+  }
+}
+
+@media (max-width: 499px) {
+  .RegistrationsList {
+    width: 99%;
+  }
+}

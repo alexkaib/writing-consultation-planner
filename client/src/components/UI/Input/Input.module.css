@@ -1,0 +1,58 @@
+.Input {
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.Label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.InputElement {
+  outline: none;
+  border: 1px solid #ccc;
+  background-color: white;
+  font: inherit;
+  padding: 6px 10px;
+  display: block;
+  width: 90%;
+}
+
+.InputHighlighted {
+  outline: none;
+  border: 1px solid red;
+  background-color: white;
+  font: inherit;
+  padding: 6px 10px;
+  display: block;
+  width: 90%;
+}
+
+.InputElement:focus {
+  outline: none;
+  background-color: #ccc;
+}
+
+.CheckBoxes {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.CheckBoxes div {
+  margin: 10px;
+  display: flex;
+  width: 350px;
+}
+
+.CheckBoxes input {
+  width: 15px;
+  height: 20px;
+  margin: auto;
+}
+
+.CheckBoxes label {
+  width: 90%;
+  margin: auto;
+}

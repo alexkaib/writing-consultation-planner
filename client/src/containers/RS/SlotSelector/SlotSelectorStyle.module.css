@@ -1,0 +1,45 @@
+.MainContainer {
+  display: flex;
+}
+
+.Options {
+  width: 35%;
+  margin: 0 auto;
+}
+
+.Slots {
+  width: 65%;
+}
+
+.OptionsContainer {
+  background-color: white;
+  padding: 2em 0;
+}
+
+@media (max-width: 900px) {
+  .Options {
+    width: 45%;
+  }
+
+  .Slots {
+    width: 55%;
+  }
+}
+
+@media (max-width: 700px) {
+  .MainContainer {
+    display: block;
+  }
+  .Options {
+    width: 95%
+  }
+  .Options h2 {
+    display: none;
+  }
+  .OptionsContainer {
+    padding: 0.5em;
+  }
+  .Slots {
+    width: 100%
+  }
+}

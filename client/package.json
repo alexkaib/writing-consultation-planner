@@ -1,0 +1,43 @@
+{
+  "name": "termin-app",
+  "version": "0.1.2.1",
+  "private": true,
+  "homepage": "https://sz.uni-frankfurt.de/",
+  "dependencies": {
+    "axios": "^1.2.1",
+    "date-fns": "^2.27.0",
+    "fsevents": "^2.3.2",
+    "react": "^17.0.2",
+    "react-datepicker": "^3.8.0",
+    "react-dom": "^17.0.2",
+    "react-redux": "^7.2.6",
+    "react-router": "^5.2.1",
+    "react-router-dom": "^5.3.0",
+    "react-scripts": "^5.0.1",
+    "recharts": "^2.2.0",
+    "redux": "^4.1.2",
+    "tsutils": "^3.21.0",
+    "typescript": "^3.9.10"
+  },
+  "overrides": {
+    "@svgr/webpack": "$@svgr/webpack"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ],
+  "devDependencies": {
+    "@svgr/webpack": "^6.5.1"
+  }
+}

@@ -1,0 +1,82 @@
+.Form {
+  width: 80%;
+  margin: 0 auto;
+  background-color: white;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.Form h2 {
+  margin: 10px 0;
+  margin-top: 20px;
+}
+
+.Form p {
+  display: inline-block;
+  width: 100%;
+}
+
+.NameForm {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.NameForm div {
+  width: 200px;
+  margin-right: 20px;
+}
+
+.Study {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.Study div {
+  width: 320px;
+}
+
+.Study select {
+  width: 200px;
+}
+
+.Study input {
+  width: 200px;
+}
+
+.Consultation {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.Consultation div {
+  width: 25em;
+  max-width: 99%;
+}
+
+.Consultation select {
+  width: 15em;
+}
+
+.AboutForm {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.AboutForm div {
+  width: 300px;
+  margin-right: 20px;
+}
+
+.OtherCheckbox input {
+  width: 80%;
+}
+
+.SmallText textarea {
+  height: 100px;
+}
+
+@media (max-width: 1199px) {
+  .Form {
+    width: 100%;
+  }
+}

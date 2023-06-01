@@ -1,0 +1,25 @@
+.Logo {
+  height: 100%;
+  padding: 0.5vw;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+}
+
+.Logo img {
+  height: 100%;
+  margin: 0 0.5vw;
+}
+
+.Flag {
+  height: 100%;
+  display: flex;
+  padding: 0.5vw;
+  box-sizing: border-box;
+}
+
+.Flag img {
+  height: 65%;
+  margin: auto;
+  cursor: pointer;
+}

@@ -1,0 +1,39 @@
+.Modal {
+    position: fixed;
+    z-index: 500;
+    background-color: white;
+    width: 95vw;
+    max-height: 70vh;
+    top: 15%;
+    overflow: scroll;
+    border: 1px solid #ccc;
+    box-shadow: 1px 1px 1px black;
+    padding: 16px;
+    box-sizing: border-box;
+    transition: all 0.3s ease-out;
+}
+
+.CloseButton {
+  border: none;
+  background-color: inherit;
+  color: gray;
+  right: 0.5em;
+  top: 0.5em;
+  position: absolute;
+}
+
+@media (min-width: 500px) {
+    .Modal {
+        width: 60vw;
+        max-height: 50vh;
+        left: 20vw;
+        top: 30%;
+    }
+}
+
+@media (min-width: 1200px) {
+    .Modal {
+        width: 40vw;
+        left: 30vw;
+    }
+}

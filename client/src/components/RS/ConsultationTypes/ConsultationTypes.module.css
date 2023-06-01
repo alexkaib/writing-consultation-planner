@@ -1,0 +1,35 @@
+.ConsultationTypes {
+  width: 80%;
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 auto;
+  padding: 20px 0;
+  background-color: inherit;
+}
+
+.ConsultationTypes h2 {
+  margin-bottom: 0;
+}
+
+.TypeContainer {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.TypeContainer h3 {
+  width: 100%;
+  margin-bottom: 0;
+}
+
+@media (max-width: 1600px) and (min-width: 500px) {
+  .ConsultationTypes {
+    width: 90%;
+  }
+}
+
+@media (max-width: 499px) {
+  .ConsultationTypes {
+    width: 99%;
+  }
+}

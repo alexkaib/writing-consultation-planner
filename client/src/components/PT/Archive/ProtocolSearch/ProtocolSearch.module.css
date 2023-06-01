@@ -1,0 +1,14 @@
+.ProtocolSearch {
+  background-color: cadetblue;
+  padding: 5px 20px;
+  border-radius: 15px;
+}
+
+.SearchInputs {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.SearchInputs div {
+  width: 300px;
+}

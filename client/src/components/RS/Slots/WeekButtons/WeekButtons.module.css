@@ -1,0 +1,90 @@
+.WeekButtons {
+  width: 80%;
+  margin: 0 auto;
+  background-color: #749d9e;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  color: white;
+  border: 2px solid white;
+  border-top: none;
+  box-sizing: border-box;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+@media (max-width: 1200px) and (min-width: 500px) {
+  .WeekButtons {
+    width: 90%;
+  }
+}
+
+@media (max-width: 499px) {
+  .WeekButtons {
+    width: 99%;
+  }
+}
+
+
+.WeekButtons p {
+  padding: 20px;
+  border: 2px solid white;
+  border-radius: 5px;
+  max-width: 30%;
+}
+
+.unavailable {
+  background-color: #ccc;
+  color: #a6a9ae;
+}
+
+.unavailable i {
+  border-color: #a6a9ae;
+}
+
+.available {
+  background-color: #749d9e;
+  cursor: pointer;
+}
+
+.available i {
+  border-color: white;
+}
+
+.available:hover {
+  background-color: white;
+  color: #ea6100;
+}
+
+.available:active {
+  animation: embiggen 0.1s linear;
+}
+
+@keyframes embiggen {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+i {
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  display: inline-block;
+  padding: 3px;
+}
+
+.right {
+  transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+}
+
+.left {
+  transform: rotate(135deg);
+  -webkit-transform: rotate(135deg);
+}

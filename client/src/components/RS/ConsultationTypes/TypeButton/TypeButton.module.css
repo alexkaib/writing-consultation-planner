@@ -1,0 +1,42 @@
+.Button {
+  width: 220px;
+  height: 130px;
+  background-color: #353238;
+  box-sizing: border-box;
+  margin: 10px 10px 0 0;
+  color: white;
+  border-radius: 5px;
+  line-height: 1.2;
+  padding: 0.5em;
+  font-size: 1.2rem;
+  font-weight: bold;
+  display: flow-root;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.Button:hover, .Button:focus, .Button:active {
+  background-color: #3f5a5a;
+}
+
+.Button p {
+  margin: 0 auto;
+}
+
+.Button img {
+  width: 50%;
+  align-self: flex-end;
+}
+
+@media (max-width: 499px) {
+  .Button {
+    width: 130px;
+    height: 100px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    padding: 10px;
+  }
+}

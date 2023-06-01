@@ -1,0 +1,15 @@
+.Slot {
+  border: none;
+  padding: 0 1em;
+  margin: 0.5em;
+  text-align: left;
+  width: 16em;
+  font-size: 1.1em;
+  background-color: cadetblue;
+  color: white;
+  cursor: pointer;
+}
+
+.Slot h3 {
+  margin-bottom: 0;
+}

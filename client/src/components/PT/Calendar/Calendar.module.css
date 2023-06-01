@@ -1,0 +1,28 @@
+.Calendar h1 {
+  text-align: center;
+}
+
+.CalendarContent {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.Week {
+  width: 70%;
+}
+
+.Options {
+  width: 30%;
+}
+
+@media (max-width: 849px) {
+  .Week {
+    width: 100%;
+  }
+
+  .Options {
+    width: 100%;
+    margin-top: 1em;
+  }
+}

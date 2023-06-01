@@ -1,0 +1,42 @@
+.SlotList {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  background-color: #749d9e;
+  width: 90%;
+  margin: 0 auto;
+  padding: 1vw;
+  box-sizing: border-box;
+}
+
+.SlotList button {
+  height: 6vh;
+  margin: 1.2vh;
+  border: 2px solid black;
+  border-radius: 5px;
+  min-width: 8em;
+  max-width: 30%;
+  background-color: white;
+  cursor: pointer;
+}
+
+.SlotList button:hover, .SlotList button:active, .SlotList button:focus {
+  background-color: #ea6100;
+  color: white;
+}
+
+.SlotList button:active {
+  animation: embiggen 0.1s linear;
+}
+
+@keyframes embiggen {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}

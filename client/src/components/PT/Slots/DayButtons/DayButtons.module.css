@@ -1,0 +1,22 @@
+.DayButtons {
+  width: 80%;
+  display: flex;
+  margin: auto;
+  border: 2px solid white;
+  border-bottom: none;
+  box-sizing: border-box;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+@media (max-width: 1200px) and (min-width: 500px) {
+  .DayButtons {
+    width: 90%;
+  }
+}
+
+@media (max-width: 499px) {
+  .DayButtons {
+    width: 99%;
+  }
+}

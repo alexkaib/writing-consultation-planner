@@ -1,0 +1,48 @@
+.ProtocolSearch {
+  background-color: white;
+  padding: 5px 20px;
+  border-radius: 15px;
+  width: 80%;
+  margin: 1em auto;
+  box-sizing: border-box;
+}
+
+.SearchInputs {
+  display: flex;
+  flex-wrap: wrap;
+  width: 50%;
+}
+
+.SearchInputs div {
+  width: 10em;
+}
+
+.SearchRow {
+  display: flex;
+}
+
+.SearchInputs h3 {
+  padding-right: 100%;
+}
+
+.SearchButtons {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.SearchButtons button {
+  width: 12em;
+  height: 4em;
+  margin: 0.5em;
+  cursor: pointer;
+}
+
+.active, .active:focus, .inactive:hover {
+  background-color: teal;
+  color: white;
+}
+
+.inactive, .inactive:focus {
+  background-color: white;
+  color: black;
+}

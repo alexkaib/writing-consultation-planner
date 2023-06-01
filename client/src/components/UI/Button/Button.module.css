@@ -1,0 +1,22 @@
+.Button {
+  margin: 10px auto;
+  padding: 0 10px;
+  min-width: 12em;
+  height: 40px;
+  border: none;
+  display: flex;
+  box-sizing: border-box;
+  font-size: 1em;
+  background-color: lightgray;
+  border-radius: 0.5em;
+}
+
+.Button p {
+  margin: auto;
+}
+
+.Button:hover, .Button:focus, .Button.active {
+  background-color: cadetblue;
+  color: white;
+  cursor: pointer;
+}

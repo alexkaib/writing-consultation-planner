@@ -1,0 +1,22 @@
+.Days {
+  width: 80%;
+  display: flex;
+  margin: 0 auto;
+  border: 2px solid white;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  border-top: none;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1200px) and (min-width: 500px) {
+  .Days {
+    width: 90%;
+  }
+}
+
+@media (max-width: 499px) {
+  .Days {
+    width: 99%;
+  }
+}

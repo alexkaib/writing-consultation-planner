@@ -1,0 +1,11 @@
+.Container {
+  width: 80%;
+  height: 20rem;
+  background-color: white;
+  margin: 0 auto;
+  padding: 1em;
+  box-sizing: border-box;
+  border-radius: 1em;
+  display: flex;
+  flex-wrap: wrap;
+}

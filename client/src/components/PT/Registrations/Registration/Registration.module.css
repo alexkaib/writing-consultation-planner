@@ -1,0 +1,53 @@
+.Registration {
+  width: 40%;
+  margin: 1em auto;
+  background-color: #fff;
+  display: flex;
+  justify-content: space-evenly;
+  flex-direction: column;
+  border-radius: 15px;
+  padding: 1em 0;
+}
+
+.Registration p {
+  width: 100%;
+  margin: 0.1em 0;
+  font-weight: 600;
+  font-size: 1.5rem;
+}
+
+.Buttons {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 0 1em;
+  margin-top: 0.5em;
+}
+
+.Buttons button {
+  font-size: 2rem;
+  margin: 0.1em;
+  background-color: white;
+  border: 1px solid;
+  border-radius: 0.3rem;
+}
+
+.Buttons button:hover {
+  cursor: pointer;
+}
+
+.Highlighted {
+  background-color: #f75c03;
+}
+
+@media (max-width: 900px) and (min-width: 500px) {
+  .Registration {
+    width: 80%;
+  }
+}
+
+@media (max-width: 499px) {
+  .Registration {
+    width: 90%;
+  }
+}

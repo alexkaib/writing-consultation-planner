@@ -1,0 +1,5 @@
+.FormSelector div div div {
+  margin: 0.2em;
+  display: flex;
+  width: 12em;
+}

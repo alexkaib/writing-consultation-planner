@@ -1,0 +1,21 @@
+.ButtonContainer {
+  display: flex;
+  margin: 0.5em 1.5em;
+  margin-top: 0;
+  justify-content: space-around;
+}
+
+.ButtonContainer button {
+  width: 30%;
+  min-height: 2.2em;
+  background-color: lightgrey;
+  font-size: inherit;
+  border: none;
+  border-radius: 0.3em;
+  cursor: pointer;
+}
+
+.active, .ButtonContainer button:hover {
+  background-color: cadetblue !important;
+  color: white !important;
+}

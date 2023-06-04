@@ -5,9 +5,11 @@ use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
 require 'vendor/autoload.php';
-require 'config.php';
 
 function send_sz_mail($address, $subject, $html_content, $plain_content, $attachment = null) {
+
+// get institution email and name from config
+require 'config.php';
 
 //Create a new PHPMailer instance
 $mail = new PHPMailer();

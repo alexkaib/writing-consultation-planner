@@ -14,8 +14,8 @@ $type_digital = $type . '_digital';
 //only show appointments not accessed (by someone else) in the last 10 minutes
 $ten_min = strtotime('-10 minutes');
 $ten_min_format = date("Y-m-d H:i:s", $ten_min);
-//only show appointments starting three days from now
-$three_days = strtotime('+3 days');
+//only show appointments starting one day from now
+$three_days = strtotime('+1 days');
 $three_days_format = date("Y-m-d H:i:s", $three_days);
 //only show appointments within the next two weeks of upcoming monday
 $next_monday = strtotime('next monday');

@@ -1,6 +1,7 @@
 const initialState = {
   termsAccepted: false,
   english: false,
+  language: 'de',
   consultationType: '',
   availableSlots: [],
   selectedSlotAndTutor: '',
@@ -45,7 +46,8 @@ const rsReducer = (state = initialState, action) => {
     case 'SWITCH_LANG':
       return {
         ...state,
-        english: !state.english
+        english: !state.english,
+        language: state.language === 'de' ? 'en' : 'de'
       };
 
     case 'SELECT_TYPE':

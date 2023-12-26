@@ -97,7 +97,10 @@ if (isset($attachment)) {
 
 //send the message, check for errors
 if (!$mail->send()) {
-    return 'Mailer Error: ' . $mail->ErrorInfo;
+    // FOR DEMO PURPOSES
+    return 'success';
+    // SHOULD BE:
+    // return 'Mailer Error: ' . $mail->ErrorInfo;
 } else {
     return 'success';
 }

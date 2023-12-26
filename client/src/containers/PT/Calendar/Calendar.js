@@ -210,7 +210,7 @@ class Calendar extends Component {
         <Modal visible={this.state.whichModal?true:false} onBackdropClick={this.backdropClickHandler}>
           {modalContent}
         </Modal>
-        <CalendarDisplayer>
+        <CalendarDisplayer language={this.props.language}>
           {this.state.calendarView ?
             <WeekDisplayer
               slots={this.state.postedSlots}
@@ -235,7 +235,8 @@ const mapStateToProps = (state) => {
     loggedIn: state.pt.loggedIn,
     ptId: state.pt.ptId,
     token: state.pt.token,
-    reservedDates: state.pt.datesWithAppointments
+    reservedDates: state.pt.datesWithAppointments,
+    language: state.rs.language
   };
 };
 

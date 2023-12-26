@@ -1,9 +1,11 @@
 import React from 'react';
+import { connect } from 'react-redux';
 
 import Button from '../../UI/Button/Button';
 import Input from '../../UI/Input/Input';
 import AuxComp from '../../../hoc/AuxComp/AuxComp';
 
+import langStrings from '../../../lang/languageStrings.json';
 import styles from './Options.module.css';
 
 const options = (props) => {
@@ -18,7 +20,7 @@ const options = (props) => {
   return (
     <div>
       <div className={styles.Explanation}>
-        <h3>Anleitung</h3>
+        <h3>{langStrings[props.language]["pt_cal_explanation_header"]}</h3>
         <p>Klicke auf ein beliebiges Feld im Kalender, um Terminverwaltungsoptionen anzuzeigen.</p>
         <Button buttonHandler={props.toggleExplanation}>{props.showExplanation?"Weniger":"Mehr"}</Button>
         {props.showExplanation ?
@@ -57,4 +59,10 @@ const options = (props) => {
   );
 }
 
-export default options;
+const mapStateToProps = (state) => {
+  return {
+    language: state.rs.language
+  };
+};
+
+export default connect(mapStateToProps)(options);

@@ -2,23 +2,25 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
+import langStrings from '../../../lang/languageStrings.json';
 import AuxComp from '../../../hoc/AuxComp/AuxComp';
 import styles from './NavItems.module.css';
 
-let rsLocations = [
-  {navName: 'Home', navLocation: '/'},
-  {navName: 'Login', navLocation: '/pt'}
-];
-
-const ptLocations = [
-  {navName: 'Home', navLocation: '/pt/landing'},
-  {navName: 'Kalender', navLocation: '/pt/my-slots'},
-  {navName: 'Beratungszeiten', navLocation: '/pt/set-slot'},
-  {navName: 'Anmeldungen', navLocation: '/pt/registrations'},
-  {navName: 'Logout', navLocation: '/pt/logout'},
-];
-
 const navItems = props => {
+
+  let rsLocations = [
+    {navName: 'Home', navLocation: '/'},
+    {navName: 'Login', navLocation: '/pt'}
+  ];
+
+  const ptLocations = [
+    {navName: 'Home', navLocation: '/pt/landing'},
+    {navName: langStrings[props.language]['nav_calendar'], navLocation: '/pt/my-slots'},
+    {navName: langStrings[props.language]['nav_schedule'], navLocation: '/pt/set-slot'},
+    {navName: langStrings[props.language]['nav_registrations'], navLocation: '/pt/registrations'},
+    {navName: 'Logout', navLocation: '/pt/logout'},
+  ];
+
   let locations = rsLocations
   if (props.loggedIn) {
     locations = ptLocations;
@@ -39,7 +41,8 @@ const navItems = props => {
 
 const mapStateToProps = (state) => {
   return {
-    loggedIn: state.pt.loggedIn
+    loggedIn: state.pt.loggedIn,
+    language: state.rs.language
   }
 }
 

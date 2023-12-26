@@ -7,15 +7,15 @@ const landing = (props) => {
   const navButtons = props.locations.map(loc => (
     <AuxComp key={loc.location}>
       <button onClick={() => props.navButtonHandler(loc.location)} className={styles.LocButton}>
-      <h2>{loc.deButton}</h2>
-      <p className={styles.LandingText}>{loc.deText}</p>
+      <h2>{loc.buttonLable}</h2>
+      <p className={styles.LandingText}>{loc.buttonDescription}</p>
       </button>
     </AuxComp>
   ));
 
   return (
     <AuxComp>
-    <h1 style={{textAlign:'center'}}>Hallo {props.name}!</h1>
+    <h1 style={{textAlign:'center'}}>{props.greeting}</h1>
     <div className={styles.Landing}>
       {navButtons}
     </div>

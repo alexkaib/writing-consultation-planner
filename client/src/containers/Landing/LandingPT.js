@@ -5,6 +5,7 @@ import axios from '../../axios-dates/axios-dates';
 
 import Landing from '../../components/PT/Landing/Landing';
 import Dashboard from '../Admin/Dashboard/Dashboard';
+import langStrings from '../../lang/languageStrings.json';
 
 class LandingPT extends Component {
   state = {
@@ -42,18 +43,18 @@ class LandingPT extends Component {
       const locations = [
         {
           location: 'my-slots',
-          deText: 'Überprüfe und lösche einzelne Termine',
-          deButton: 'Beratungskalender'
+          buttonDescription: langStrings[this.props.language]['nav_calendar_desc'],
+          buttonLable: langStrings[this.props.language]['nav_calendar']
         },
         {
           location: 'set-slot',
-          deText: 'Bearbeite deine regulären Beratungszeiten',
-          deButton: 'Beratungszeiten'
+          buttonDescription: langStrings[this.props.language]['nav_schedule_desc'],
+          buttonLable: langStrings[this.props.language]['nav_schedule']
         },
         {
           location: 'registrations',
-          deText: 'Verwalte aktuelle Termine',
-          deButton: 'Anmeldungen'
+          buttonDescription: langStrings[this.props.language]['nav_registrations_desc'],
+          buttonLable: langStrings[this.props.language]['nav_registrations']
         },
 
       ];
@@ -63,23 +64,23 @@ class LandingPT extends Component {
         locations.push(
           {
             location: 'archive',
-            deText: 'Durchsuche alte Protokolle und teile sie mit Kolleg*innen',
-            deButton: 'Archiv'
+            buttonDescription: langStrings[this.props.language]['nav_archive_desc'],
+            buttonLable: langStrings[this.props.language]['nav_archive']
           },
           {
             location: 'team-calendar',
-            deText: 'Zeige aktuelle Termine deiner Kolleg*innen an und melde dich für Hospitationen',
-            deButton: 'Teamkalender'
+            buttonDescription: langStrings[this.props.language]['nav_teamcal_desc'],
+            buttonLable: langStrings[this.props.language]['nav_teamcal']
           },
           {
             location: 'stats',
-            deText: 'Verfolge die Entwicklung des Schreibzentrums in Zahlen',
-            deButton: 'Statistiken'
+            buttonDescription: langStrings[this.props.language]['nav_statistics_desc'],
+            buttonLable: langStrings[this.props.language]['nav_statistics']
           },
           {
             location: 'logout',
-            deText: 'Melde dich ab',
-            deButton: 'Logout'
+            buttonDescription: langStrings[this.props.language]['nav_logout_desc'],
+            buttonLable: langStrings[this.props.language]['nav_logout']
           }
         );
       }
@@ -88,7 +89,10 @@ class LandingPT extends Component {
         <div>
           {this.props.role === 'admin' ? <Dashboard /> : null}
           <Landing
-            name={this.props.firstName}
+            greeting={
+              langStrings[this.props.language]['pt_greeting']
+              .replace("{{tutorName}}", this.props.firstName)
+            }
             locations={locations}
             navButtonHandler={this.navButtonHandler}/>
         </div>
@@ -106,7 +110,8 @@ const mapStateToProps = (state) => {
     token: state.pt.token,
     ptId: state.pt.ptId,
     firstName: state.pt.firstName,
-    role: state.pt.role
+    role: state.pt.role,
+    language: state.rs.language
   };
 };
 

@@ -38,7 +38,7 @@ if (isset($post_data->jwt)) {
               ) VALUES (?, ?, ?)");
 
             $stmt->bind_param(
-              "iii",
+              "iis",
               $user_id,
               $terminId,
               $post_data->rsWasPresent
@@ -65,7 +65,7 @@ if (isset($post_data->jwt)) {
               ]);
             } else {
               if (isset($post_data->rsId)) {
-                $anonymize_query = mysqli_query($db_conn, "UPDATE ratsuchende SET firstName='Archiviert', lastName='Archiviert', email='Archiviert' WHERE rsId='$rsId'");
+                $anonymize_query = mysqli_query($db_conn, "UPDATE ratsuchende SET first_name='Archiviert', last_name='Archiviert', email='Archiviert' WHERE rsId='$rsId'");
 
                 if ($anonymize_query) {
                   echo json_encode([

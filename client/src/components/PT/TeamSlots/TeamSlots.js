@@ -14,6 +14,7 @@ const teamSlots = (props) => {
       time={slot.time}
       type={slot.type}
       format={slot.format}
+      guestRequested={slot.guestRequested}
       onAppointmentClick={props.onAppointmentClick} />
   ));
 

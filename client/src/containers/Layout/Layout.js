@@ -8,10 +8,18 @@ import PT from '../PT/PT';
 import styles from './Layout.module.css';
 
 class Layout extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      menuExtended: window.matchMedia("(min-width: 800px)").matches
+    }
+  }
+
   render() {
     return (
       <AuxComp>
-        <Toolbar />
+        <Toolbar menuExtended={this.state.menuExtended} />
         <main className={styles.MainContainer}>
         <Switch>
           <Route exact path="/">

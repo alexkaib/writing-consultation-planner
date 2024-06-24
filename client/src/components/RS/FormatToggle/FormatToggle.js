@@ -14,11 +14,13 @@ const formatToggle = props => (
       className={props.currentFormat==='analogue'?styles.active:null}>
       {props.english?"In person":"In Präsenz"}
     </button>
+    {/*
     <button
       className={props.currentFormat==='both'?styles.active:null}
       onClick={() => props.onFormatSelection('both')}>
       {props.english?"Either":"Egal"}
     </button>
+    */}
   </div>
 );
 

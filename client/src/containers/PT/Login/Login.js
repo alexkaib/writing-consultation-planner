@@ -28,7 +28,6 @@ class Login extends Component {
     };
     axios.post('/auth.php', authData)
       .then(res => {
-        console.log(res);
         if (res.data.success === 1) {
           const token = res.data.access_token;
           this.props.onAuthSuccess(token);

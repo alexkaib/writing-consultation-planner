@@ -9,11 +9,13 @@
 }
 
 .Week {
-  width: 70%;
+  width: 65%;
 }
 
 .Options {
-  width: 30%;
+  width: 35%;
+  padding-right: 2em;
+  box-sizing: border-box;
 }
 
 @media (max-width: 849px) {
@@ -23,6 +25,7 @@
 
   .Options {
     width: 100%;
-    margin-top: 1em;
+    padding: 0;
+    margin-bottom: 2em;
   }
 }

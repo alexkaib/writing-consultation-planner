@@ -1,3 +1,300 @@
 {
-  "server":"http://127.0.0.1:8888/"
+  "server":"./server/",
+  "server_testing":"http://127.0.0.1:8888",
+  "email":"your@email.com",
+  "privacy_terms": "YourPrivacyStatementURL",
+  "max_file_size":10,
+  "audiences": ["students", "phds"],
+  "registration_form": [
+    {
+      "id": 0,
+      "label":
+        {
+          "en": "Contact information",
+          "de": "Kontaktinformationen"
+        },
+      "type": "heading"
+    },
+    {
+      "id": 1,
+      "db_name": "first_name",
+      "label":
+        {
+          "en": "First name",
+          "de": "Vorname"
+        },
+      "type": "short_text"
+    },
+    {
+      "id": 2,
+      "db_name": "last_name",
+      "label":
+        {
+          "en": "Last name",
+          "de": "Nachname"
+        },
+      "type": "short_text"
+    },
+    {
+      "id": 3,
+      "db_name": "email",
+      "label":
+        {
+          "en": "E-Mail",
+          "de": "E-Mail"
+        },
+      "type": "email"
+    },
+    {
+      "id": 4,
+      "label":
+        {
+          "en": "Course of study",
+          "de": "Studium"
+        },
+      "type": "heading"
+    },
+    {
+      "id": 5,
+      "db_name": "semester",
+      "label":
+        {
+          "en": "Current semester",
+          "de": "Fachsemester"
+        },
+      "type": "select",
+      "options": [
+        {
+          "value": "1-2",
+          "label": {
+            "en": "1-2",
+            "de": "1-2"
+          }
+        },
+        {
+          "value": "3-4",
+          "label": {
+            "en": "3-4",
+            "de": "3-4"
+          }
+        },
+        {
+          "value": "5-6",
+          "label": {
+            "en": "5-6",
+            "de": "5-6"
+          }
+        },
+        {
+          "value": "7-8",
+          "label": {
+            "en": "7-8",
+            "de": "7-8"
+          }
+        },
+        {
+          "value": "9-10",
+          "label": {
+            "en": "9-10",
+            "de": "9-10"
+          }
+        },
+        {
+          "value": "11-12",
+          "label": {
+            "en": "11-12",
+            "de": "11-12"
+          }
+        },
+        {
+          "value": "> 12",
+          "label": {
+            "en": "> 12",
+            "de": "> 12"
+          }
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "db_name": "target_degree",
+      "label":
+        {
+          "en": "Target degree",
+          "de": "(Angestrebter) Abschluss"
+        },
+      "type": "select",
+      "options": [
+        {
+          "value": "bachelor",
+          "label": {
+            "en": "Bachelor",
+            "de": "Bachelor"
+          }
+        },
+        {
+          "value": "master",
+          "label": {
+            "en": "Master",
+            "de": "Master"
+          }
+        },
+        {
+          "value": "promotion",
+          "label": {
+            "en": "PhD",
+            "de": "Promotion"
+          }
+        },
+        {
+          "value": "lehramt",
+          "label": {
+            "en": "Teaching degree",
+            "de": "Lehramt"
+          }
+        },
+        {
+          "value": "staatsexamen",
+          "label": {
+            "en": "Staatsexamen",
+            "de": "Staatsexamen"
+          }
+        },
+        {
+          "value": "other",
+          "label": {
+            "en": "other",
+            "de": "Sonstiger"
+          }
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "db_name": "subject",
+      "label":
+        {
+          "en": "Subject/discipline",
+          "de": "Studienfach"
+        },
+      "type": "short_text"
+    },
+    {
+      "id": 8,
+      "label":
+        {
+          "en": "About the consultation",
+          "de": "Zur Beratung"
+        },
+      "type": "heading"
+    },
+    {
+      "id": 9,
+      "db_name": "reason",
+      "label":
+        {
+          "en": "What are the reasons for your appointment?",
+          "de": "Was ist dein Anliegen für die Beratung?"
+        },
+      "type": "medium_text"
+    },
+    {
+      "id": 10,
+      "db_name": "reached_by",
+      "label":
+        {
+          "en": "How did you learn about us?",
+          "de": "Wie hast du von uns erfahren?"
+        },
+      "type": "checkboxes",
+      "options": [
+        {
+          "value": "In einer Lehrveranstaltung",
+          "label": {
+            "en": "In one of my courses",
+            "de": "In einer Lehrveranstaltung"
+          }
+        },
+        {
+          "value": "Email meines Fachbereichs",
+          "label": {
+            "en": "Email from my department",
+            "de": "Email meines Fachbereichs"
+          }
+        },
+        {
+          "value": "Hinweisschilder in der Bibliothek",
+          "label": {
+            "en": "Sign in the library",
+            "de": "Hinweisschilder in der Bibliothek"
+          }
+        },
+        {
+          "value": "Plakate / Flyer ",
+          "label": {
+            "en": "Poster / flyer",
+            "de": "Plakate / Flyer "
+          }
+        },
+        {
+          "value": "Infoveranstaltung der Uni",
+          "label": {
+            "en": "University info session",
+            "de": "Infoveranstaltung der Uni"
+          }
+        },
+        {
+          "value": "Social Media",
+          "label": {
+            "en": "Social media",
+            "de": "Social Media"
+          }
+        },
+        {
+          "value": "Newsletter des Schreibzentrums",
+          "label": {
+            "en": "Writing centre newsletter",
+            "de": "Newsletter des Schreibzentrums"
+          }
+        },
+        {
+          "value": "Sonstiges",
+          "label": {
+            "en": "Other",
+            "de": "Sonstiges"
+          }
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "label":
+        {
+          "en": "Message your tutor",
+          "de": "Nachricht an Berater*in"
+        },
+      "type": "heading"
+    },
+    {
+      "id": 12,
+      "db_name": "files",
+      "label":
+        {
+          "en": "Upload your documents (max. 3 pages)",
+          "de": "Lade deine Dokumente hoch (max. 3 Seiten)"
+        },
+      "type": "files"
+    },
+    {
+      "id": 13,
+      "db_name": "comment",
+      "label":
+        {
+          "en": "Comment (optional)",
+          "de": "Kommentar (optional)"
+        },
+      "type": "medium_text",
+      "max_length": 200
+    }
+  ]
 }

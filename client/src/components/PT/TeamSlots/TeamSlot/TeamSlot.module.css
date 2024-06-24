@@ -5,9 +5,18 @@
   text-align: left;
   width: 16em;
   font-size: 1.1em;
-  background-color: cadetblue;
   color: white;
   cursor: pointer;
+}
+
+.Available {
+  background-color: cadetblue;
+}
+
+.Unavailable {
+  color: #a6a9ae;
+  background-color: #ccc;
+  cursor: default;
 }
 
 .Slot h3 {

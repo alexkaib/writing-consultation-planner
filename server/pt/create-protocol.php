@@ -25,69 +25,76 @@ if (isset($post_data->jwt)) {
 
         $post_data = json_decode(file_get_contents("php://input"));
 
-        $terminId = $post_data->terminId;
-        $protocolInfo = $post_data->protocolInfo;
+        if (isset($post_data->terminId) && isset($post_data->protocolInfo)) {
 
-        function unpackCheckboxDict($checkboxDict) {
-          $values = [];
-          foreach ($checkboxDict as $key => $value) {
-            if ($value) {
-              array_push($values, $key);
+          $terminId = $post_data->terminId;
+          $protocolInfo = $post_data->protocolInfo;
+
+          function unpackCheckboxDict($checkboxDict) {
+            $values = [];
+            foreach ($checkboxDict as $key => $value) {
+              if ($value) {
+                array_push($values, $key);
+              }
             }
+            return implode("_", $values);
           }
-          return implode("_", $values);
-        }
 
-        $topics = unpackCheckboxDict($protocolInfo->topics);
-        $writingPhase = unpackCheckboxDict($protocolInfo->writingPhase);
+          $columns = array();
+          $values = array();
+          //$stmt = $db_conn->prepare("INSERT INTO ratsuchende (?) VALUES (?)");
+          // instead: associative array.keys as first (?, ?, ...) list, values as second
+          $col_count = 0;
+          foreach ($protocolInfo as $column => $value) {
+            array_push($columns, $column);
+            $col_count += 1;
+            if (is_object($value)) {
+              $value = unpackCheckboxDict($value);
+            }
+            array_push($values, $value);
+          }
 
-        $stmt = $db_conn->prepare("INSERT INTO protocols (
-            ptId,
-            terminId,
-            RSAnwesend,
-            Beratungsschwerpunkt,
-            Schreibphase,
-            Verlauf,
-            ReflexionAllgemein,
-            ReflexionMethode,
-            ReflexionPersoenlich,
-            Arbeitsvereinbarung
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+          $sql = "INSERT INTO protocols (ptId, terminId, " . implode(', ', $columns) . ") ";
+          $sql .= "VALUES (?, ?, " . implode(', ', array_fill(0, $col_count, "?")) . ")";
 
-        $stmt->bind_param(
-          "iiisssssss",
-          $user_id,
-          $terminId,
-          $protocolInfo->stattgefunden,
-          $topics,
-          $writingPhase,
-          $protocolInfo->proceedings,
-          $protocolInfo->reflectionGeneral,
-          $protocolInfo->reflectionMethods,
-          $protocolInfo->reflectionPersonal,
-          $protocolInfo->workAgreement
-        );
+          $stmt = $db_conn->prepare($sql);
+          $stmt->bind_param("iii" . implode(array_fill(0, $col_count-1, 's')), $user_id, $terminId, ...$values);
+          $stmt->execute();
 
-        $stmt->execute();
 
-        //add error check
+          if ($stmt->error) {
+            echo json_encode([
+                "success" => 0,
+                "msg" => "Beim Erstellen des Protokolls ist ein Fehler aufgetreten.",
+                "err" => $stmt->error
+            ]);
+            die;
+          }
 
-        $protocolId = $stmt->insert_id;
+          $protocolId = $stmt->insert_id;
 
-        $connectTermin = mysqli_query($db_conn, "UPDATE `termine` SET `protocolId` = '$protocolId' WHERE `terminId` = '$terminId'");
+          $connectTermin = mysqli_query($db_conn, "UPDATE `termine` SET `protocolId` = '$protocolId' WHERE `terminId` = '$terminId'");
 
-        if ($connectTermin) {
-          echo json_encode([
-              "success" => 1,
-              "msg" => "Protokoll gespeichert.",
-              "protocolId" => $protocolId
-          ]);
+          if ($connectTermin) {
+            echo json_encode([
+                "success" => 1,
+                "msg" => "Protokoll gespeichert.",
+                "protocolId" => $protocolId
+            ]);
+          } else {
+            echo json_encode([
+                "success" => 0,
+                "msg" => "Beim Speichern des Protokolls ist ein Fehler aufgetreten."
+            ]);
+          }
         } else {
           echo json_encode([
               "success" => 0,
-              "msg" => "Beim Speichern des Protokolls ist ein Fehler aufgetreten."
+              "msg" => "Keine Protokolldaten empfangen."
           ]);
         }
+
+
 
 }catch (Exception $e){
 echo json_encode(array(

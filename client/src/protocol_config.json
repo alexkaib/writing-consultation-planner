@@ -1,0 +1,263 @@
+{
+  "protocol_form": [
+    {
+      "id": 0,
+      "label":
+        {
+          "en": "Consultation details",
+          "de": "Beratungsinformationen"
+        },
+      "type": "heading"
+    },
+    {
+      "id": 1,
+      "db_name": "RSAnwesend",
+      "label":
+        {
+          "en": "Did the consultation take place?",
+          "de": "Fand die Beratung statt?"
+        },
+      "type": "select",
+      "options": [
+        {
+          "value": "1",
+          "label": {
+            "en": "Yes",
+            "de": "Ja"
+          }
+        },
+        {
+          "value": "0",
+          "label": {
+            "en": "No",
+            "de": "Nein"
+          }
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "db_name": "Beratungsschwerpunkte",
+      "label":
+        {
+          "en": "Consultation focus (multiple choice)",
+          "de": "Beratungsschwerpunkte (Mehrfachnennung möglich)"
+        },
+      "type": "checkboxes",
+      "options": [
+        {
+          "value": "Recherche",
+          "label": {
+            "en": "Research",
+            "de": "Recherche"
+          }
+        },
+        {
+          "value": "Schreibprozess",
+          "label": {
+            "en": "Writing process",
+            "de": "Schreibprozess"
+          }
+        },
+        {
+          "value": "Leseprozess",
+          "label": {
+            "en": "Reading process",
+            "de": "Leseprozess"
+          }
+        },
+        {
+          "value": "Themenfindung",
+          "label": {
+            "en": "Finding a topic",
+            "de": "Themenfindung"
+          }
+        },
+        {
+          "value": "Fragestellung",
+          "label": {
+            "en": "Research question",
+            "de": "Fragestellung"
+          }
+        },
+        {
+          "value": "StrukturUndGliederung",
+          "label": {
+            "en": "Structure and outline",
+            "de": "Struktur und Gliederung"
+          }
+        },
+        {
+          "value": "Argumentation",
+          "label": {
+            "en": "Argumentation",
+            "de": "Argumentation"
+          }
+        },
+        {
+          "value": "SpracheUndStil",
+          "label": {
+            "en": "Language and style",
+            "de": "Sprache und Stil"
+          }
+        },
+        {
+          "value": "Wissenschaftlichkeit",
+          "label": {
+            "en": "Academic principles",
+            "de": "Wissenschaftlichkeit"
+          }
+        },
+        {
+          "value": "Zitieren",
+          "label": {
+            "en": "Citation",
+            "de": "Zitieren"
+          }
+        },
+        {
+          "value": "Formales",
+          "label": {
+            "en": "Formalities",
+            "de": "Formales"
+          }
+        },
+        {
+          "value": "ArbeitsUndZeitorganisation",
+          "label": {
+            "en": "Time and project management",
+            "de": "Arbeits- und Zeitorganisation"
+          }
+        },
+        {
+          "value": "Dozierendenkommunikation",
+          "label": {
+            "en": "Communicating with teachers",
+            "de": "Dozierendenkommunikation"
+          }
+        },
+        {
+          "value": "AllgemeineInformationUndStudienorganisation",
+          "label": {
+            "en": "General information and study organization",
+            "de": "Allgemeine Information und Studienorganisation"
+          }
+        },
+        {
+          "value": "KI-Tools",
+          "label": {
+            "en": "AI tools (ChatGPT, DeepL, etc.)",
+            "de": "KI-Tools (ChatGPT, DeepL, etc.)"
+          }
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "label":
+        {
+          "en": "Writing phase",
+          "de": "Schreibphase"
+        },
+      "type": "checkboxes",
+      "options": [
+        {
+          "value": "VorbereitenUndPlanen",
+          "label": {
+            "en": "Prep and planning",
+            "de": "Vorbereiten/Planen"
+          }
+        },
+        {
+          "value": "Lesen",
+          "label": {
+            "en": "Reading",
+            "de": "Lesen"
+          }
+        },
+        {
+          "value": "Schreiben",
+          "label": {
+            "en": "Writing",
+            "de": "Schreiben"
+          }
+        },
+        {
+          "value": "Überarbeiten",
+          "label": {
+            "en": "Revision",
+            "de": "Überarbeiten"
+          }
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "label":
+        {
+          "en": "Consultation process",
+          "de": "Verlauf"
+        },
+      "type": "heading"
+    },
+    {
+      "id": 5,
+      "db_name": "Verlauf",
+      "label":
+        {
+          "en": "How did the consultation go? Remember to specify the occasion, concern and agreed on goal of the consultation.",
+          "de": "Wie ist die Beratung abgelaufen? Bitte nenne immer Anlass, Anliegen und Auftrag."
+        },
+      "type": "long_text"
+    },
+    {
+      "id": 6,
+      "label":
+        {
+          "en": "Reflection",
+          "de": "Reflexion"
+        },
+      "type": "heading"
+    },
+    {
+      "id": 7,
+      "db_name": "ReflexionAllgemein",
+      "label":
+        {
+          "en": "1. In general: How did I feel about the situation overall? (Room, atmosphere, etc.)",
+          "de": "1. Allgemein: Wie war die Beratungssituation insgesamt? (Raum, Atmosphäre, etc.)"
+        },
+      "type": "long_text"
+    },
+    {
+      "id": 8,
+      "db_name": "ReflexionMethode",
+      "label":
+        {
+          "en": "2. Method: Which methods, both conversational and writing related, were useful in the consultation?",
+          "de": "2. Methode An welchem Punkt im Beratungsprozess war welche Methode nützlich? (Gesprächstechniken, Schreibmethoden, etc.)"
+        },
+      "type": "long_text"
+    },
+    {
+      "id": 9,
+      "db_name": "ReflexionPersoenlich",
+      "label":
+        {
+          "en": "3. My role as a consultant: How did I feel during the consultation? What worked, what didn't? Which conversational strategies could I have used?",
+          "de": "3. Ich als Berater*in: Wie ging es mir selbst bei der Beratung? Was war gut? Was hätte ich besser machen können? Welche Beratungsstrategien hätte ich anwenden können?"
+        },
+      "type": "long_text"
+    },
+    {
+      "id": 10,
+      "db_name": "Arbeitsvereinbarung",
+      "label":
+        {
+          "en": "Work agreement: What did you agree on as a next step?",
+          "de": "Arbeitsvereinbarung: Auf welche weiteren Schritte habt ihr euch geeinigt?"
+        },
+      "type": "medium_text"
+    }
+  ]
+}

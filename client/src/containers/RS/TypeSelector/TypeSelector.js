@@ -1,57 +1,56 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from "react-router-dom";
+import axios from '../../../axios-dates/axios-dates';
 
-import ConsultationTypes from '../../../components/RS/ConsultationTypes/ConsultationTypes';
+import config from '../../../config.json';
 
+import TypeSelection from '../../../components/UI/TypeSelection/TypeSelection';
 
 class TypeSelector extends Component {
+  state = {
+    consultationTypes: [],
+    error: null
+  }
 
   typeSelectionHandler = (consultationType) => {
     this.props.onTypeSelect(consultationType);
-    // for institutions not using the calendar, forward directly to contact form
-    if (consultationType === 'isz') {
-      this.props.history.push({pathname: '/rs/isz-submit/'});
-    } else {
-      this.props.history.push({pathname: '/rs/select-slot/'});
-    }
-  };
+    this.props.history.push({pathname: '/rs/select-slot/'});
+  }
+
+  componentDidMount () {
+    axios.get('/rs/available-types.php')
+      .then(res => {
+        if (res.data.success) {
+          const types = res.data.types.map(type => ({
+            id: type.id,
+            audience: type.audience,
+            label: {
+              'en': type.name_en,
+              'de': type.name_de
+            }
+          }));
+          this.setState({consultationTypes: types});
+        } else {
+          this.setState({error: "Ein Server-Fehler ist aufgetreten: " + res.data.msg});
+        }
+      })
+      .catch(err => {
+        this.setState({error: "Ein Server-Fehler ist aufgetreten: " + err.message});
+      })
+  }
 
   render () {
-    // adding new consultation types requires updates to database and the following files:
-    // containers/PT/ConsultationTypeSelection.js
-    // components/UI/FormSelector.js
-    // containers/PT/RSInfo.js
-    let studentConsultationTypes = [
-      {type: 'student', text: 'Schreibberatung (Deutsch)', logo: 'sz'},
-      {type: 'student_english', text: 'Schreibberatung (Englisch)', logo: 'sz'},
-      {type: 'student_reading', text: 'Leseberatung (Deutsch)', logo: 'sz'},
-    ];
-
-    let phdConsultationTypes = [
-      {type: 'phd', text: 'Schreibberatung (Deutsch)', logo: 'sz'},
-      {type: 'phd_english', text: 'Schreibberatung (Englisch)', logo: 'sz'},
-    ];
-
-    if (this.props.english) {
-      studentConsultationTypes = [
-        {type: 'student_english', text: 'Writing Consultation in English', logo: 'sz'},
-        {type: 'student', text: 'Writing Consultation (German)', logo: 'sz'},
-        {type: 'student_reading', text: 'Reading consultation (German)', logo: 'sz'},
-      ];
-
-      phdConsultationTypes = [
-        {type: 'phd', text: 'Writing Consultation (German)', logo: 'sz'},
-        {type: 'phd_english', text: 'Writing Consultation (English)', logo: 'sz'}
-      ];
-    }
-
     return (
-      <ConsultationTypes
-        onTypeSelect={this.typeSelectionHandler}
-        studentConsultationTypes={studentConsultationTypes}
-        phdConsultationTypes={phdConsultationTypes}
-        english={this.props.english} />
+      <>
+      {this.state.error ? <p style={{color:'red'}}>{this.state.error}</p> :
+      <TypeSelection
+        audiences={config.audiences}
+        consultationTypes={this.state.consultationTypes}
+        buttonHandler={this.typeSelectionHandler}
+        language={this.props.language} />
+      }
+      </>
     );
   }
 };
@@ -64,7 +63,8 @@ const mapDispatchToProps = (dispatch) => {
 
 const mapStateToProps = (state) => {
   return {
-    english: state.rs.english
+    english: state.rs.english,
+    language: state.rs.language
   };
 };
 

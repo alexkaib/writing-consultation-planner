@@ -8,6 +8,11 @@
   margin-bottom: 1em;
 }
 
+.DashboardButton {
+  margin: 1em;
+  padding: 0.5em;
+}
+
 .Alert {
   font-weight: bold;
   color: red;

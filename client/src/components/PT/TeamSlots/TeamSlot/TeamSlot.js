@@ -4,37 +4,18 @@ import styles from './TeamSlot.module.css';
 
 const teamSlot = props => {
   const dateString = props.date.split('-').reverse().join('.');
-  const timeString = props.time + ':00 Uhr';
-  let typeString = 'Schreibberatung (Deutsch)';
-  switch (props.type) {
-    case 'student_english':
-      typeString = 'Schreibberatung (Englisch)';
-      break;
-    case 'phd':
-      typeString = 'Promotionsberatung (Deutsch)';
-      break;
-    case 'phd_english':
-      typeString = 'Promotionsberatung (Englisch)';
-      break;
-    case 'student_stem':
-      typeString = 'Schreibberatung (MINT)';
-      break;
-    case 'research':
-      typeString = 'Rechercheberatung';
-      break;
-    case 'textfeedback':
-      typeString = 'Textfeedback per E-Mail';
-      break;
-    default:
-      break;
-  }
+  const timeString = props.time + ' Uhr';
+
   const formatString = props.format === 'digital' ? 'Online' :
     (props.format === 'analogue' ? 'In Präsenz' : 'Keine Angabe');
 
+  console.log(props.guestRequested)
   return (
-  <button className={styles.Slot} onClick={() => props.onAppointmentClick(props.terminId)}>
-    <h3><strong>{dateString} um {timeString}</strong></h3>
-    <em>{typeString}</em>
+  <button
+    className={styles.Slot + " " + (props.guestRequested ? styles.Unavailable : styles.Available)}
+    onClick={props.guestRequested ? null : () => props.onAppointmentClick(props.terminId)}>
+    <h3><strong>{dateString} von {timeString}</strong></h3>
+    {props.guestRequested ? "[Hospitation vergeben]" : "[Für Hospitation offen]"}
     <p>
       Format: {formatString} <br></br>
       Berater*in: {props.tutor}

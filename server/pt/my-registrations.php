@@ -26,11 +26,11 @@ if (isset($post_data->jwt)) {
         $user_id = $data_array['userId'];
 
         //$registrations = mysqli_query($db_conn, "SELECT * FROM `termine` WHERE `tutorId` = '$user_id' AND `available` = 0 AND `archived` = 0");
-        $registration_query = mysqli_query($db_conn, "SELECT t.*, rs.firstName, rs.lastName, rs.email  FROM termine t
+        $registration_query = mysqli_query($db_conn, "SELECT t.*, rs.first_name, rs.last_name, rs.email  FROM termine t
                                                   INNER JOIN ratsuchende rs ON (rs.rsId = t.rsId)
                                                   WHERE `tutorId` = '$user_id' AND `available` = 0 AND `archived` = 0");
 
-        $tutor_query = mysqli_query($db_conn, "SELECT `ptId`, `firstName`, `lastName` FROM `peerTutors`");
+        $tutor_query = mysqli_query($db_conn, "SELECT `ptId`, `firstName`, `lastName` FROM `peerTutors` WHERE active=1");
 
         if ($registration_query && $tutor_query) {
           $tutors = mysqli_fetch_all($tutor_query, MYSQLI_ASSOC);

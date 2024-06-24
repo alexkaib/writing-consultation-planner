@@ -29,7 +29,6 @@ class CalendarOptions extends Component {
   }
 
   submitCancelRequest = () => {
-    console.log(this.state);
     this.setState({showModal: true, modalContent: <Spinner />});
 
     const payload = {
@@ -41,7 +40,6 @@ class CalendarOptions extends Component {
     axios.post('/pt/delete-slots.php', payload)
       .then(res => {
         if (res.data.success === 1) {
-          console.log(res)
           this.setState({
             modalContent: 'Alle Beratungen im ausgewählten Zeitraum wurde abgesagt.',
             showModal: true

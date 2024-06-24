@@ -11,9 +11,6 @@ require '../db_connection.php';
 $post_data = json_decode(file_get_contents("php://input"));
 
 $terminId = (int) $post_data->appointmentId;
-$datum = $post_data->date;
-$time = $post_data->time;
-$tutorId = $post_data->ptId;
 $now = date("Y-m-d H:i:s");
 
 $stmt = $db_conn->prepare(

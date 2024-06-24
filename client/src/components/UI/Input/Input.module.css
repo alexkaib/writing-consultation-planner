@@ -20,6 +20,22 @@
   width: 90%;
 }
 
+.Input textarea {
+  box-sizing: border-box;
+}
+
+.InputWithText {
+  display: flex;
+}
+
+.InputWithText input {
+  width: 30%
+}
+
+.InputWithText p {
+  margin: auto 1em;
+}
+
 .InputHighlighted {
   outline: none;
   border: 1px solid red;

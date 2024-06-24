@@ -1,6 +1,5 @@
 import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import AuxComp from '../../../hoc/AuxComp/AuxComp';
 
 import styles from './StatBox.module.css';
 
@@ -25,7 +24,7 @@ const statBox = (props) => {
   }
 
   return (
-    <AuxComp>
+    <>
     <div className={styles.Container}>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
@@ -51,7 +50,7 @@ const statBox = (props) => {
         </LineChart>
       </ResponsiveContainer>
     </div>
-    </AuxComp>
+    </>
   );
 }
 

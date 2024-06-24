@@ -14,6 +14,8 @@ class LandingPT extends Component {
 
   navButtonHandler = (location) => {
     const url = '/pt/' + location;
+    document.body.scrollTop = 0; // For Safari
+    document.documentElement.scrollTop = 0;
     this.props.history.push(url);
     return null;
   }
@@ -46,11 +48,13 @@ class LandingPT extends Component {
           buttonDescription: langStrings[this.props.language]['nav_calendar_desc'],
           buttonLable: langStrings[this.props.language]['nav_calendar']
         },
+        /*
         {
           location: 'set-slot',
           buttonDescription: langStrings[this.props.language]['nav_schedule_desc'],
           buttonLable: langStrings[this.props.language]['nav_schedule']
         },
+        */
         {
           location: 'registrations',
           buttonDescription: langStrings[this.props.language]['nav_registrations_desc'],
@@ -60,7 +64,7 @@ class LandingPT extends Component {
       ];
 
       // additional locations for peer tutors
-      if (this.props.role === 'peertutor' || this.props.role === 'admin') {
+      if (this.props.role === 'peerTutor' || this.props.role === 'admin') {
         locations.push(
           {
             location: 'archive',
@@ -72,11 +76,13 @@ class LandingPT extends Component {
             buttonDescription: langStrings[this.props.language]['nav_teamcal_desc'],
             buttonLable: langStrings[this.props.language]['nav_teamcal']
           },
+          /*
           {
             location: 'stats',
             buttonDescription: langStrings[this.props.language]['nav_statistics_desc'],
             buttonLable: langStrings[this.props.language]['nav_statistics']
           },
+          */
           {
             location: 'logout',
             buttonDescription: langStrings[this.props.language]['nav_logout_desc'],
@@ -84,10 +90,63 @@ class LandingPT extends Component {
           }
         );
       }
+/*
+      if (this.props.role === 'admin') {
+        locations.unshift(
+          {
+            location: 'pt-management',
+            buttonDescription: langStrings[this.props.language]['nav_pt_management_desc'],
+            buttonLable: langStrings[this.props.language]['nav_pt_management']
+          },
+          {
+            location: 'consultation-config',
+            buttonDescription: langStrings[this.props.language]['nav_consultation_config_desc'],
+            buttonLable: langStrings[this.props.language]['nav_consultation_config']
+          }
+        );
+      }
+      */
+      const adminLocations = [
+        {
+          location: 'pt-management',
+          buttonDescription: langStrings[this.props.language]['nav_pt_management_desc'],
+          buttonLable: langStrings[this.props.language]['nav_pt_management']
+        },
+        {
+          location: 'consultation-config',
+          buttonDescription: langStrings[this.props.language]['nav_consultation_config_desc'],
+          buttonLable: langStrings[this.props.language]['nav_consultation_config']
+        },
+        {
+          location: 'stats',
+          buttonDescription: langStrings[this.props.language]['nav_statistics_desc'],
+          buttonLable: langStrings[this.props.language]['nav_statistics']
+        }
+        /*
+        {
+          location: 'alt-calendar-preview',
+          buttonDescription: "Testansicht der neuen Terminansicht",
+          buttonLable: "Kalender Preview"
+        },
+        {
+          location: 'form-builder-preview',
+          buttonDescription: "Formular Test",
+          buttonLable: "Formular Test"
+        }
+        */
+      ]
 
       toDisplay = (
         <div>
-          {this.props.role === 'admin' ? <Dashboard /> : null}
+          {this.props.role === 'admin' ?
+            <>
+            <Dashboard />
+            <Landing
+              greeting="Verwaltung"
+              locations={adminLocations}
+              navButtonHandler={this.navButtonHandler}/>
+            </> : null
+          }
           <Landing
             greeting={
               langStrings[this.props.language]['pt_greeting']

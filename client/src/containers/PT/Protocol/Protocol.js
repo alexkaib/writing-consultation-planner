@@ -2,87 +2,55 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import axios from '../../../axios-dates/axios-dates';
 
-import ProtocolForm from '../../../components/PT/ProtocolForm/ProtocolForm';
+import protocolConfig from '../../../protocol_config.json';
+
+import FormDisplayer from '../../FormDisplayer/FormDisplayer';
+import BigButton from '../../../components/UI/BigButton/BigButton';
 import Spinner from '../../../components/UI/Spinner/Spinner';
-import AuxComp from '../../../hoc/AuxComp/AuxComp';
 
 class Protocol extends Component {
-  state = {
-    //"updating" decides whether submitting the form leads to create- or update-request
-    updating: false,
-    protocolId: null,
-    loading: true,
-    error: null,
-    successMessage: null,
-    protocolInfo: {
-      stattgefunden: 1,
-      topics: {
-        Recherche: false,
-        Schreibprozess: false,
-        Leseprozess: false,
-        Themenfindung: false,
-        Fragestellung: false,
-        StrukturundGliederung: false,
-        Argumentation: false,
-        SpracheundStil: false,
-        Wissenschaftlichkeit: false,
-        Zitieren: false,
-        Formales: false,
-        ArbeitsundZeitorganisation: false,
-        Dozierendenkommunikation: false,
-        AllgemeineInformationundStudienorganisation: false
-      },
-      writingPhase: {
-        VorbereitenPlanen: false,
-        Lesen: false,
-        Schreiben: false,
-        Überarbeiten: false
-      },
-      proceedings: '',
-      reflectionGeneral: '',
-      reflectionMethods: '',
-      reflectionPersonal: '',
-      workAgreement: ''
+  constructor(props) {
+    super(props);
+
+    const initialProtocolInfo = {};
+
+    protocolConfig.protocol_form.forEach(formElement => {
+      if (formElement.type === 'heading') return;
+      if (formElement.type === 'checkboxes') {
+        const checkboxDict = {};
+        formElement.options.forEach(option => {
+          checkboxDict[option.value] = false;
+        });
+        initialProtocolInfo[formElement.db_name] = checkboxDict;
+      } else if (formElement.type === 'select') {
+        initialProtocolInfo[formElement.db_name] = formElement.options[0].value;
+      } else {
+        initialProtocolInfo[formElement.db_name] = null;
+      }
+    });
+
+    this.state = {
+      showModal: false,
+      error: null,
+      formInfo: initialProtocolInfo,
+      invalidForm: false,
+      //"updating" decides whether submitting the form leads to create- or update-request
+      updating: false,
+      protocolId: null,
+      loading: true,
+      successMessage: null
     }
   }
 
-  inputHandler = (event) => {
-    const currentInfo = {...this.state.protocolInfo};
-
-    switch (event.target.type) {
-      case 'text':
-      case 'email':
-      case 'select-one':
-        currentInfo[event.target.id] = event.target.value;
-        this.setState({
-          protocolInfo: currentInfo
-        });
-        break;
-
-      case 'checkbox':
-        const checkboxesName = event.target.parentElement.parentElement.id;
-        const clickedBox = event.target.value;
-        const updatedCheckboxes = currentInfo[checkboxesName];
-        updatedCheckboxes[clickedBox] = !updatedCheckboxes[clickedBox];
-        currentInfo[checkboxesName] = updatedCheckboxes;
-        this.setState({
-          protocolInfo: currentInfo
-        });
-        break;
-
-      default:
-      currentInfo[event.target.id] = event.target.value;
-      this.setState({
-        protocolInfo: currentInfo
-      });
-    }
-  };
+  updateFormInfo = (newInfo) => {
+    this.setState({formInfo: newInfo});
+  }
 
   submitHandler = () => {
     if (this.state.updating) {
       const payload = {
         protocolToUpdate: this.state.protocolId,
-        protocolInfo: this.state.protocolInfo,
+        protocolInfo: this.state.formInfo,
         jwt: this.props.token
       };
 
@@ -95,11 +63,11 @@ class Protocol extends Component {
             successMessage: 'Deine Änderungen am Protokoll wurden erfolgreich übernommen.'
           })
         } else {
-          console.log(res)
+          this.setState({error: res.data.msg});
         }
       })
       .catch(err => {
-        console.log(err)
+        this.setState({error: err});
       })
     }
 
@@ -107,7 +75,7 @@ class Protocol extends Component {
 
       const payload = {
         terminId: this.props.terminId,
-        protocolInfo: this.state.protocolInfo,
+        protocolInfo: this.state.formInfo,
         jwt: this.props.token
       };
 
@@ -119,19 +87,18 @@ class Protocol extends Component {
           this.setState({
             updating: true,
             protocolId: res.data.protocolId,
-            successMessage: 'Das Protokoll wurde erfolgreich abgespeichert. Du kannst es weiter bearbeiten oder zum Menü zurückkehren, um die Beratung zu archivieren.'})
+            successMessage: 'Das Protokoll wurde erfolgreich abgespeichert. Du kannst es weiter bearbeiten oder zum Menü zurückkehren, um die Beratung zu archivieren.'
+          });
         } else {
-          console.log(res)
+          this.setState({error: res.data.msg});
         }
       })
       .catch(err => {
-        console.log(err)
+        this.setState({error: err});
       })
-
     }
-
     else {
-      console.log('Keine props-Daten empfangen')
+      console.log('Keine props-Daten empfangen');
     }
   }
 
@@ -148,36 +115,22 @@ class Protocol extends Component {
       axios.post(url, auth)
         .then(res => {
           if (res.data.success === 1) {
-            const newProtocolInfo = {...this.state.protocolInfo};
+            const newProtocolInfo = {...this.state.formInfo};
             const protocolData = res.data.protocolData;
 
-            if (protocolData.Beratungsschwerpunkt) {
-              const topicString = protocolData.Beratungsschwerpunkt;
-              let newTopics = topicString.split('_').reduce((val, topic) => ({...val, [topic]: true}), {});
-              newProtocolInfo['topics'] = newTopics;
+            for (const [key, value] of Object.entries(newProtocolInfo)) {
+              // no string means checkbox object, so unpack received string concat of checked options
+              if (typeof value !== 'string' && value !== null) {
+                protocolData[key].split('_').forEach(checkboxKey =>
+                  newProtocolInfo[key][checkboxKey] = true
+                );
+              } else {
+                newProtocolInfo[key] = protocolData[key];
+              }
             }
-            if (protocolData.Schreibphase) {
-              const phaseString = protocolData.Schreibphase;
-              let newPhases = phaseString.split('_').reduce((val, phase) => ({...val, [phase]: true}), {});
-              newProtocolInfo['writingPhase'] = newPhases;
-            }
-            if (protocolData.Verlauf) {
-              newProtocolInfo['proceedings'] = protocolData.Verlauf;
-            }
-            if (protocolData.ReflexionAllgemein) {
-              newProtocolInfo['reflectionGeneral'] = protocolData.ReflexionAllgemein;
-            }
-            if (protocolData.ReflexionMethode) {
-              newProtocolInfo['reflectionMethods'] = protocolData.ReflexionMethode;
-            }
-            if (protocolData.ReflexionPersoenlich) {
-              newProtocolInfo['reflectionPersonal'] = protocolData.ReflexionPersoenlich;
-            }
-            if (protocolData.Arbeitsvereinbarung) {
-              newProtocolInfo['workAgreement'] = protocolData.Arbeitsvereinbarung;
-            }
+
             this.setState({
-              protocolInfo: newProtocolInfo,
+              formInfo: newProtocolInfo,
               updating: true,
               protocolId: protocolData.protocolId,
               loading: false
@@ -204,18 +157,25 @@ class Protocol extends Component {
         toDisplay = <p>{this.state.error}</p>;
       }
       else if (!this.state.loading) {
-        toDisplay = (<ProtocolForm
-          protocolInfo={this.state.protocolInfo}
-          inputHandler={this.inputHandler}
-          submitHandler={this.submitHandler} />)
+        toDisplay = (
+          <>
+          <FormDisplayer
+            formStructure={protocolConfig.protocol_form}
+            updateParentState={this.updateFormInfo}
+            formInfo={this.state.formInfo}
+            goBackHandler={null}
+            submitHandler={null}/>
+          <BigButton available buttonHandler={this.submitHandler}>Protokoll speichern</BigButton>
+          </>
+        )
       }
     }
 
     return (
-      <AuxComp>
+      <>
         <h3 style={{color: 'green'}}>{this.state.successMessage}</h3>
         {toDisplay}
-      </AuxComp>
+      </>
     )
   }
 }

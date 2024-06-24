@@ -25,25 +25,20 @@ if (isset($post_data->jwt)) {
 
         $search_term = $post_data->searchTerm;
         $search_term = mysqli_real_escape_string($db_conn, $search_term);
-        $fachbereich = $post_data->fachbereich;
-        $genre = $post_data->genre;
 
-        $query = "SELECT t.terminId, t.datum, t.timeslot, t.rsId, t.protocolId
+        $query = "SELECT t.terminId, t.datum, t.fromTime, t.rsId, t.protocolId
           FROM termine t
           INNER JOIN ratsuchende rs ON (rs.rsId = t.rsId)
           INNER JOIN protocols p ON (p.protocolId = t.protocolId)
           WHERE t.archived = '1'";
 
         if ($search_term) {
-          $query .= " AND p.Verlauf LIKE '%$search_term%'";
-        }
-
-        if (!($fachbereich === 'na')) {
-          $query .= " AND rs.fachbereich='$fachbereich'";
-        }
-
-        if (!($genre === 'na')) {
-          $query .= " AND rs.genre='$genre'";
+          // look for the search term in every column specified by client
+          $query .= " AND (";
+          foreach ($post_data->colsToSearch as $col_name) {
+            $query .= "p.$col_name LIKE '%$search_term%' OR ";
+          }
+          $query .= "false)";
         }
 
         $query_result = mysqli_query($db_conn, $query);

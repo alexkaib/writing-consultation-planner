@@ -1,0 +1,71 @@
+.Day {
+  width: 100%;
+  box-sizing: border-box;
+  background-color: #ccc;
+  color: #a6a9ae;
+  padding: 1em;
+  margin-bottom: 1em;
+  flex-direction: column;
+  font-size: 1.2em;
+  border: none;
+}
+
+.Active {
+  color: #fff;
+  cursor: pointer;
+  background-color: #749d9e;
+}
+
+.Active:hover, .Active:active {
+  background-color: #2a5e5f;
+}
+
+.Open {
+  color: #fff;
+  cursor: pointer;
+  background-color: #2a5e5f;
+  margin-bottom: 0;
+}
+
+.DayButton {
+  outline: none;
+  display: flex;
+  background-color: inherit;
+  border: none;
+  padding: 0;
+  text-align: left;
+}
+
+.SlotContainer {
+  width: 100%;
+  height: 20em;
+  height: fit-content;
+  display: flex;
+  flex-wrap: wrap;
+  box-sizing: border-box;
+  padding: 0 1em;
+  background-color: #6a9595;
+  margin-bottom: 1em;
+}
+
+.arrowRight {
+  width: 0;
+  height: 0;
+  border-top: 0.5em solid transparent;
+  border-bottom: 0.5em solid transparent;
+  border-left: 0.5em solid white;
+  display: inline-block;
+  margin-right: 0.4em;
+  align-self: center;
+}
+
+.arrowDown {
+  width: 0;
+  height: 0;
+  border-left: 0.5em solid transparent;
+  border-right: 0.5em solid transparent;
+  border-top: 0.5em solid white;
+  display: inline-block;
+  margin-right: 0.4em;
+  align-self: center;
+}

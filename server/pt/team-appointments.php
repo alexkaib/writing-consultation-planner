@@ -25,14 +25,12 @@ if (isset($post_data->jwt)) {
   //only show appointments in the future
   $today = date("Y-m-d");
 
-  $sql = "SELECT t.terminId, t.datum, t.timeslot, pt.firstName, pt.lastName, rs.angemeldetAls, rs.format
+  $sql = "SELECT t.terminId, t.datum, t.fromTime, t.toTime, t.guestRequest, pt.firstName, pt.lastName, rs.bookedTypeId, rs.bookedFormat
     FROM termine t
     INNER JOIN peerTutors pt ON (pt.ptId = t.tutorId)
     INNER JOIN ratsuchende rs ON (rs.rsId = t.rsId)
-    WHERE t.available = '0'
-    AND t.guestRequest = '0'
-    AND t.datum >= '$today'
-    AND pt.role = 'peertutor'";
+    WHERE t.available = 0
+    AND t.datum >= '$today'";
 
   $all_appointments = mysqli_query($db_conn, $sql);
 
@@ -46,7 +44,7 @@ if (isset($post_data->jwt)) {
   } else {
     echo json_encode([
         "success" => 0,
-        "slots" => "Datenbankabfrage nicht erfolgreich."
+        "msg" => "Datenbankabfrage nicht erfolgreich."
     ]);
   }
 }catch (Exception $e){

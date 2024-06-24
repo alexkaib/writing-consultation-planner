@@ -16,12 +16,12 @@ const navItems = props => {
   const ptLocations = [
     {navName: 'Home', navLocation: '/pt/landing'},
     {navName: langStrings[props.language]['nav_calendar'], navLocation: '/pt/my-slots'},
-    {navName: langStrings[props.language]['nav_schedule'], navLocation: '/pt/set-slot'},
+    //{navName: langStrings[props.language]['nav_schedule'], navLocation: '/pt/set-slot'},
     {navName: langStrings[props.language]['nav_registrations'], navLocation: '/pt/registrations'},
     {navName: 'Logout', navLocation: '/pt/logout'},
   ];
 
-  let locations = rsLocations
+  let locations = rsLocations;
   if (props.loggedIn) {
     locations = ptLocations;
   }

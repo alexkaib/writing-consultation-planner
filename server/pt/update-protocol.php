@@ -38,39 +38,34 @@ if (isset($post_data->jwt)) {
           return implode("_", $values);
         }
 
-        $topics = unpackCheckboxDict($protocolInfo->topics);
-        $writingPhase = unpackCheckboxDict($protocolInfo->writingPhase);
+        $columns = array();
+        $values = array();
+        //$stmt = $db_conn->prepare("INSERT INTO ratsuchende (?) VALUES (?)");
+        // instead: associative array.keys as first (?, ?, ...) list, values as second
+        $col_count = 0;
+        foreach ($protocolInfo as $column => $value) {
+          array_push($columns, $column);
+          $col_count += 1;
+          if (is_object($value)) {
+            $value = unpackCheckboxDict($value);
+          }
+          array_push($values, $value);
+        }
+        // include received protocol id in values for statement execution
+        array_push($values, $protocolToUpdate);
 
-        $stmt = $db_conn->prepare("UPDATE protocols SET
-            RSAnwesend=?,
-            Beratungsschwerpunkt=?,
-            Schreibphase=?,
-            Verlauf=?,
-            ReflexionAllgemein=?,
-            ReflexionMethode=?,
-            ReflexionPersoenlich=?,
-            Arbeitsvereinbarung=?
-          WHERE protocolId=?");
+        $sql = "UPDATE protocols SET " . implode('=?, ', $columns);
+        $sql .= "=? WHERE protocolId=?";
+        $stmt = $db_conn->prepare($sql);
 
-        $stmt->bind_param(
-          "isssssssi",
-          $protocolInfo->stattgefunden,
-          $topics,
-          $writingPhase,
-          $protocolInfo->proceedings,
-          $protocolInfo->reflectionGeneral,
-          $protocolInfo->reflectionMethods,
-          $protocolInfo->reflectionPersonal,
-          $protocolInfo->workAgreement,
-          $protocolToUpdate
-        );
-
+        $stmt->bind_param("i" . implode(array_fill(0, $col_count-1, 's')) . "i", ...$values);
         $stmt->execute();
 
         if ($stmt->error) {
           echo json_encode([
               "success" => 0,
-              "msg" => "Beim Ausführen des Updates ist ein Fehler aufgetreten."
+              "msg" => "Beim Ausführen des Updates ist ein Fehler aufgetreten.",
+              "err" => $stmt->error
           ]);
         } else {
           echo json_encode([

@@ -2,7 +2,6 @@ import React from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import Landing from '../Landing/Landing';
 import TypeSelector from './TypeSelector/TypeSelector';
 import SlotSelector from './SlotSelector/SlotSelectorB';
 import SlotSubmitter from './SlotSubmitter/SlotSubmitter';
@@ -12,16 +11,16 @@ const rs = (props) => {
   return (
     <Switch>
       <Route exact path='/'>
-        <Landing />
+        <TypeSelector />
       </Route>
       <Route path='/rs/select-type'>
-        {props.termsAccepted ? <TypeSelector /> : <Redirect to="/" />}
+        <TypeSelector />
       </Route>
       <Route path='/rs/select-slot'>
-        {props.termsAccepted ? <SlotSelector /> : <Redirect to="/" />}
+        {props.selectedType ? <SlotSelector /> : <Redirect to="/" />}
       </Route>
       <Route path='/rs/submit-slot'>
-        {props.termsAccepted ? <SlotSubmitter /> : <Redirect to="/" />}
+        {props.selectedSlotId ? <SlotSubmitter /> : <Redirect to="/" />}
       </Route>
       <Route path='/rs/success'>
         <SubmitSuccess />
@@ -32,7 +31,8 @@ const rs = (props) => {
 
 const mapStateToProps = (state) => {
   return {
-    termsAccepted: state.rs.termsAccepted
+    selectedType: state.rs.consultationType,
+    selectedSlotId: state.rs.selectedSlotId
   };
 };
 

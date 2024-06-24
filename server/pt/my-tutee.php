@@ -34,7 +34,13 @@ if (isset($post_data->jwt)) {
 
           if(mysqli_num_rows($get_rs) > 0){
             $rs_info = mysqli_fetch_assoc($get_rs);
-            echo json_encode(["success"=>1, "rsInfo"=>$rs_info]);
+
+            // get consultation type info
+            $booked_type_id = $rs_info['bookedTypeId'];
+            $get_type = mysqli_query($db_conn, "SELECT name_de, name_en FROM `consultationTypes` WHERE `id`='$booked_type_id'");
+            $type_info = mysqli_fetch_assoc($get_type);
+
+            echo json_encode(["success"=>1, "rsInfo"=>$rs_info, "typeInfo"=>$type_info]);
           }
           else {
             echo json_encode(["success"=>0, "msg"=>"Die Ratsuchende wurde nicht gefunden"]);

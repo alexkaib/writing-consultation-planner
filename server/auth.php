@@ -20,8 +20,8 @@ if(isset($data->username)
   ){
     $username = mysqli_real_escape_string($db_conn, trim($data->username));
     $pw_given = trim($data->password);
-    $stmt = $db_conn->prepare("SELECT `password`, `ptId`, `email`
-      FROM `peerTutors` WHERE `email` = ?");
+    $stmt = $db_conn->prepare("SELECT `password`, `ptId`, `email`, `role`
+      FROM `peerTutors` WHERE `email` = ? AND active=1");
     $stmt->bind_param("s", $username);
     $stmt->execute();
     $checkUser = $stmt->get_result();
@@ -40,6 +40,7 @@ if(isset($data->username)
           'data' => [                  // Data related to the signer user
               'userId'   => $user['ptId'], // userid from the users table
               'userName' => $user['email'], // User name
+              'userRole' => $user['role']
               ]
             ];
 

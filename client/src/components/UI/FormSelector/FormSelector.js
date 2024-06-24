@@ -1,30 +1,19 @@
 import React from 'react';
 import Input from '../Input/Input';
 
+import langStrings from '../../../lang/languageStrings.json';
+
 import styles from './FormSelector.module.css';
 
 const formSelector = props => {
-  let typeOptions;
-  switch (props.ptRole) {
-    case 'librarian':
-      typeOptions = [
-        {value: 'research', label: 'Rechercheberatung'}
-      ];
-      break;
-    case 'methodTutor':
-      typeOptions = [
-        {value: 'methods', label: 'Methodenberatung'}
-      ];
-      break;
-    default:
-      typeOptions = [
-        {value: 'student', label: 'Schreibberatung (Deutsch)'},
-        {value: 'student_english', label: 'Schreibberatung (Englisch)'},
-        {value: 'student_reading', label: 'Leseberatung (Deutsch)'},
-        {value: 'phd', label: 'Promotionsberatung (Deutsch)'},
-        {value: 'phd_english', label: 'Promotionsberatung (Englisch)'}
-      ];
-  }
+  const checkedTypes = {};
+  const typeOptions = [];
+
+  props.consultationTypes.forEach(type => {
+    const label = type.label[props.language] + ' [' + langStrings[props.language][type.audience] + ']'
+    checkedTypes[type.id] = type.selected;
+    typeOptions.push({value: type.id, label: label});
+  });
 
   const formatOptions = [
     {value: 'digital', label: 'Online'},
@@ -34,12 +23,18 @@ const formSelector = props => {
   return (
     <div className={styles.FormSelector}>
       <Input
+        id='timeInput'
+        inputtype='fromToTime'
+        label='Um wie viel Uhr?'
+        onChange={props.onTimeSet} />
+      <Input
         id='typeCheckboxes'
         inputtype='checkboxes'
         label='Wähle deine Beratungsform(en)'
+        language={props.language}
         options={typeOptions}
         currentChecked={props.selectedTypes}
-        onChange={props.onFormCheck} />
+        onChange={props.typeSelectHandler} />
       <Input
         id='formatCheckboxes'
         inputtype='checkboxes'

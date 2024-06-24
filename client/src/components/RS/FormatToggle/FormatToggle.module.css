@@ -1,12 +1,11 @@
 .ButtonContainer {
   display: flex;
-  margin: 0.5em 1.5em;
   margin-top: 0;
-  justify-content: space-around;
 }
 
 .ButtonContainer button {
-  width: 30%;
+  width: 40%;
+  margin-right: 1.8em;
   min-height: 2.2em;
   background-color: lightgrey;
   font-size: inherit;

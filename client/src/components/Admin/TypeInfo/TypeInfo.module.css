@@ -1,0 +1,49 @@
+.TypeInfoBox {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.MultiBox {
+  width: auto;
+  display: flex;
+}
+
+.MediumText {
+  width: 100%;
+}
+
+.MediumText div {
+  width: 100%;
+}
+
+.MediumText textarea {
+  width: 100%;
+  height: 3.5em;
+}
+
+.LongText {
+  width: 100%;
+}
+
+.LongText textarea {
+  width: 100%;
+  height: 18em;
+}
+
+.FormAndText {
+  display: flex;
+}
+
+.FormAndText p {
+  position: relative;
+  top: 1.6em;
+  right: 6em;
+}
+
+.FormAndText div {
+  width: auto;
+}
+
+.FormAndText input {
+  width: 3em;
+}

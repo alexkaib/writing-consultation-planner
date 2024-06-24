@@ -4,34 +4,41 @@ import axios from '../../../axios-dates/axios-dates';
 
 import StatBox from '../../../components/Admin/Stats/StatBox';
 import StatSearch from '../../../components/Admin/Stats/StatSearch';
+import DBExport from '../../../components/Admin/Stats/DBExport';
 import Modal from '../../../components/UI/Modal/Modal';
 import Spinner from '../../../components/UI/Spinner/Spinner';
 
-import AuxComp from '../../../hoc/AuxComp/AuxComp';
 
 class StatsDisplayer extends Component {
-  state = {
-    loading: true,
-    stats: [],
-    timeframe: {
-      'from_month':1,
-      'from_year':2021,
-      'to_month':6,
-      'to_year':2021
-    },
-    selectedTypes: {
-      "Alle":true,
-      "Studierende (fachübergreifend)":false,
-      "Studierende (englischsprachig)":false,
-      "Studierende (Germanistik)":false,
-      "Studierende (Ethnologie)":false,
-      "Studierende (Textfeedback)":false,
-      "Promovierende":false,
-      "Promovierende (englischsprachig)":false
-    },
-    modalContent: null,
-    error: null
+  // the names of the database tables that can be exported by user
+  dbTables = [
+    'ratsuchende',
+    'termine',
+    'protocols',
+    'peerTutors'
+  ];
+
+  constructor(props) {
+    super(props);
+
+    const currentYear = new Date().getFullYear();
+
+    this.state = {
+      loading: true,
+      consultationTypes: [],
+      stats: [],
+      timeframe: {
+        'from_month':1,
+        'from_year':currentYear,
+        'to_month':6,
+        'to_year':currentYear
+      },
+      selectedType: -1,
+      modalContent: null,
+      error: null
+    }
   }
+
 
   backdropClickHandler = () => {
     this.setState({modalContent: null, loading: false});
@@ -46,22 +53,45 @@ class StatsDisplayer extends Component {
   };
 
   typeButtonHandler = type => {
-    let currentTypes = {...this.state.selectedTypes};
-    currentTypes[type] = !currentTypes[type];
-    this.setState({"selectedTypes": currentTypes}, () => this.loadStats());
+    this.setState({"selectedType": type}, () => this.loadStats());
+  }
+
+  exportButtonHandler = tableName => {
+    const url = '/admin/db-export.php';
+    const payload = {
+      jwt: this.props.token,
+      tableName: tableName
+    }
+
+    axios.post(url, payload, {responseType: 'blob'})
+      .then(res => {
+        // create file link in browser's memory
+        const href = URL.createObjectURL(res.data);
+
+        // create "a" HTML element with href to file & click
+        const link = document.createElement('a');
+        link.href = href;
+        link.setAttribute('download', 'export.csv'); //or any other extension
+        document.body.appendChild(link);
+        link.click();
+
+        // clean up "a" element & remove ObjectURL
+        document.body.removeChild(link);
+        URL.revokeObjectURL(href);
+      })
+      .catch(err => {
+        this.setState({loading: false, modalContent: 'error', error: err.message});
+      })
   }
 
   loadStats = () => {
     const url = '/admin/monthly-stats.php';
-    const currentTypes = {...this.state.selectedTypes};
-    const activeTypes = Object.keys(currentTypes).reduce(
-      (typeList, key) => currentTypes[key]?typeList.concat(key):typeList, []);
+    const currentType = this.state.selectedType;
     const payload = {
       jwt: this.props.token,
       ...this.state.timeframe,
-      types: activeTypes
+      type: currentType
     }
-
     axios.post(url, payload)
       .then(res => {
         if (res.data.success === 1) {
@@ -75,7 +105,26 @@ class StatsDisplayer extends Component {
       })
   }
 
+  loadTypes = () => {
+    const url = '/rs/available-types.php';
+
+    axios.get(url)
+      .then(res => {
+        if (res.data.success === 1) {
+          const types = res.data.types;
+          types.splice(0, 0, {id: -1, name_de: 'Alle', name_en: 'All', audience: ''});
+          this.setState({consultationTypes: res.data.types});
+        } else {
+          this.setState({loading: false, modalContent: 'error', error: res.data.msg});
+        }
+      })
+      .catch(err => {
+        this.setState({loading: false, modalContent: 'error', error: err.message});
+      })
+  }
+
   componentDidMount () {
+    this.loadTypes();
     this.loadStats();
   }
 
@@ -84,16 +133,12 @@ class StatsDisplayer extends Component {
     switch (this.state.modalContent) {
       case 'success':
         toDisplay = (
-          <AuxComp>
           <p>Die Anfrage wurde erfolgreich gesendet.</p>
-          </AuxComp>
         );
         break;
       case 'error':
         toDisplay = (
-          <AuxComp>
           <p>Beim Ausführen der Aktion ist ein Serverfehler aufgetreten: {this.state.error}</p>
-          </AuxComp>
         );
         break;
       default:
@@ -101,7 +146,7 @@ class StatsDisplayer extends Component {
     }
 
     return (
-      <AuxComp>
+      <>
         <Modal
           visible={this.state.modalContent}
           onBackdropClick={this.backdropClickHandler}>
@@ -111,15 +156,21 @@ class StatsDisplayer extends Component {
         <h1 style={{textAlign: 'center'}}>Statistiken</h1>
         {this.state.loading ?
           <Spinner /> :
-          <AuxComp>
+          <>
             <StatBox stats={this.state.stats} />
             <StatSearch
               inputHandler={this.inputHandler}
-              selectedTypes={this.state.selectedTypes}
-              typeButtonHandler={this.typeButtonHandler} />
-          </AuxComp>
+              availableTypes={this.state.consultationTypes}
+              selectedType={this.state.selectedType}
+              typeButtonHandler={this.typeButtonHandler}
+              language={this.props.language} />
+            <DBExport
+              dbTables={this.dbTables}
+              exportButtonHandler={this.exportButtonHandler}
+              language={this.props.language} />
+          </>
         }
-      </AuxComp>
+      </>
     );
   }
 }
@@ -128,7 +179,8 @@ const mapStateToProps = (state) => {
   return {
     loggedIn: state.pt.loggedIn,
     ptId: state.pt.ptId,
-    token: state.pt.token
+    token: state.pt.token,
+    language: state.rs.language
   };
 };
 

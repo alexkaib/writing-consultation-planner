@@ -22,6 +22,8 @@ if (isset($post_data->jwt)) {
   $data_array = (array) $decoded_array['data'];
   $user_id = $data_array['userId'];
 
+  $type = $post_data->type;
+
   $from_month = $post_data->from_month;
   $from_year = $post_data->from_year;
   $to_month= $post_data->to_month;
@@ -65,58 +67,19 @@ if (isset($post_data->jwt)) {
 
     $to=date("Y-m-d", mktime(0, 0, 0, $month, 1, $year));
 
-    $month_sql = "SELECT t.terminId, t.available, t.datum, t.timeslot, t.protocolId, p.RSAnwesend
+    $month_sql = "SELECT t.terminId, t.available, t.datum, t.fromTime, t.protocolId, p.RSAnwesend
                     FROM termine t
                     LEFT JOIN ratsuchende rs ON (rs.rsId = t.rsId)
                     LEFT JOIN protocols p ON (p.protocolId = t.protocolId)
                     WHERE t.datum >= '$from' AND t.datum < '$to'";
 
-    if (!in_array("Alle", $post_data->types)) {
-      $offered_sql = "SELECT t.terminId FROM termine t
-                      LEFT JOIN peerTutors pt ON (pt.ptId = t.tutorId)
-                      WHERE t.datum >= '$from' AND t.datum < '$to'
-                      AND (";
-      $month_sql .= ' AND (';
-      if (in_array("Studierende (fachübergreifend)", $post_data->types)) {
-        $month_sql .= 'rs.angemeldetAls="student" OR ';
-        $offered_sql .= "(pt.studentConsultations=1 AND pt.languages LIKE '%Deutsch%') OR ";
-      }
-      if (in_array("Studierende (englischsprachig)", $post_data->types)) {
-        $month_sql .= "rs.angemeldetAls='student_english' OR ";
-        $offered_sql .= "(pt.studentConsultations=1 AND pt.languages LIKE '%Englisch%') OR ";
-      }
-      if (in_array("Studierende (Germanistik)", $post_data->types)) {
-        $month_sql .= "rs.angemeldetAls='germanistik' OR ";
-        $offered_sql .= "pt.subjects LIKE '%Germanistik%' OR ";
-      }
-      if (in_array("Studierende (Ethnologie)", $post_data->types)) {
-        $month_sql .= "rs.angemeldetAls='ethnologie' OR ";
-        $offered_sql .= "pt.subjects LIKE '%Ethnologie%' OR ";
-      }
-      if (in_array("Studierende (Textfeedback)", $post_data->types)) {
-        $month_sql .= "rs.angemeldetAls='textfeedback' OR ";
-        $offered_sql .= "pt.textFeedback=1 OR ";
-      }
-      if (in_array("Promovierende", $post_data->types)) {
-        $month_sql .= "rs.angemeldetAls='phd' OR ";
-        $offered_sql .= "(pt.phdConsultations=1 AND pt.languages LIKE '%Deutsch%') OR ";
-      }
-      if (in_array("Promovierende (englischsprachig)", $post_data->types)) {
-        $month_sql .= "rs.angemeldetAls='phd_english' OR ";
-        $offered_sql .= "(pt.phdConsultations=1 AND pt.languages LIKE '%Englisch%') OR ";
-      }
-      $month_sql .= 'FALSE)';
-      $offered_sql .= 'FALSE)';
+    if ($type > -1) {
+      $month_sql .= " AND rs.bookedTypeId=$type";
     }
 
     $month_data = mysqli_query($db_conn, $month_sql);
 
-    if (!in_array("Alle", $post_data->types)) {
-      $month_offered = mysqli_query($db_conn, $offered_sql);
-      $month_array['offered'] = $month_offered->num_rows;
-    } else {
-      $month_array['offered'] = $month_data->num_rows;
-    }
+    $month_array['offered'] = $month_data->num_rows;
 
     if ($month_data->num_rows > 0) {
       $offered = $month_data->fetch_all(MYSQLI_ASSOC);
@@ -127,7 +90,7 @@ if (isset($post_data->jwt)) {
         }
         if ($row['protocolId'] > -1) {
           $month_array['protocols'] += 1;
-          if ($row['RSAnwesend'] != 1) {
+          if ($row['RSAnwesend'] !== '1') {
             $month_array['noshows'] += 1;
           }
         }

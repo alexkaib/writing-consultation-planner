@@ -23,6 +23,9 @@ yarn-debug.log*
 yarn-error.log*
 
 
-#local assets
+# local assets
 /src/assets/university-logo.png
 /src/assets/writing-center-logo.png
+
+# local config
+/src/local_config

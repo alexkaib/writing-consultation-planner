@@ -1,0 +1,15 @@
+.Days {
+  width: 70%;
+}
+
+@media (max-width: 1200px) and (min-width: 500px) {
+  .Days {
+    width: 90%;
+  }
+}
+
+@media (max-width: 499px) {
+  .Days {
+    width: 99%;
+  }
+}

@@ -2,26 +2,17 @@ import React from 'react';
 
 import styles from './DashboardDisplay.module.css';
 
+import langStrings from '../../../lang/languageStrings.json';
+
 const dashboardDisplay = props => {
-  // test values
-  const stats = {
-      openSlotsFuture: 3,
-      openSlotsRecent: 30,
-      openSlotsPast: 95,
-      firstBookingsFuture: 4,
-      firstBookingsRecent: 7,
-      firstBookingsPast: 28,
-      followUpsFuture: 5,
-      followUpsRecent: 10,
-      followUpsPast: 34,
-      guestRequestsFuture: 2,
-      guestRequestsRecent: 1,
-      guestRequestsPast: 18,
-      protocols: 23,
-      missingProtocols: 37,
-      noShows: 10,
-      evaluationsSent: 60
-  }
+  const missingProtocolsPercentage =
+    Math.round(props.stats.missingProtocols / props.stats.totalBookingsPast * 100);
+
+  const noShowsPercentage =
+    Math.round(props.stats.noShows / props.stats.totalBookingsPast * 100);
+
+  const evalPercentage =
+    Math.round(props.stats.evaluationsSent / props.stats.totalBookingsPast * 100);
 
   return (
     <div className={styles.Container}>
@@ -29,11 +20,25 @@ const dashboardDisplay = props => {
       <div className={styles.Box}>
         <h2>Aktuelle Zahlen</h2>
 
+        {
+          props.consultationTypes.map(type => (
+            <button
+              className={styles.DashboardButton}
+              key={type.id}
+              id={type.id}
+              onClick={props.onTypeSelect}>
+              {props.language === 'de' ? type.name_de : type.name_en}<br />
+              <em>{langStrings[props.language][type.audience]}</em>
+            </button>
+          ))
+        }
+
         <table>
         <thead>
           <tr>
             <th></th>
             <th>Offene Termine</th>
+            <th>Gebuchte Beratungen</th>
             <th>Erstberatungen</th>
             <th>Folgeberatungen</th>
             <th>Hospitationsanfragen</th>
@@ -42,24 +47,27 @@ const dashboardDisplay = props => {
         <tbody>
           <tr>
             <th>Nächste 30 Tage</th>
-            <td>{stats.openSlotsFuture}</td>
-            <td>{stats.firstBookingsFuture}</td>
-            <td>{stats.followUpsFuture}</td>
-            <td>{stats.guestRequestsFuture}</td>
+            <td>{props.stats.openSlotsFuture}</td>
+            <td>{props.stats.totalBookingsFuture}</td>
+            <td>{props.stats.firstBookingsFuture}</td>
+            <td>{props.stats.followUpsFuture}</td>
+            <td>{props.stats.guestRequestsFuture}</td>
           </tr>
           <tr>
             <th>Letzte 30 Tage</th>
-            <td>{stats.openSlotsRecent}</td>
-            <td>{stats.firstBookingsRecent}</td>
-            <td>{stats.followUpsRecent}</td>
-            <td>{stats.guestRequestsRecent}</td>
+            <td>{props.stats.openSlotsRecent}</td>
+            <td>{props.stats.totalBookingsRecent}</td>
+            <td>{props.stats.firstBookingsRecent}</td>
+            <td>{props.stats.followUpsRecent}</td>
+            <td>{props.stats.guestRequestsRecent}</td>
           </tr>
           <tr>
             <th>Letzte 180 Tage</th>
-            <td>{stats.openSlotsPast}</td>
-            <td>{stats.firstBookingsPast}</td>
-            <td>{stats.followUpsPast}</td>
-            <td>{stats.guestRequestsPast}</td>
+            <td>{props.stats.openSlotsPast}</td>
+            <td>{props.stats.totalBookingsPast}</td>
+            <td>{props.stats.firstBookingsPast}</td>
+            <td>{props.stats.followUpsPast}</td>
+            <td>{props.stats.guestRequestsPast}</td>
           </tr>
         </tbody>
         </table>
@@ -70,13 +78,19 @@ const dashboardDisplay = props => {
         <button onClick={props.togglePercentages}>Absolut / Prozentual</button>
         <ul>
           <li>
-            Fehlende Protokolle: {props.showPercentages ? '10%' : stats.missingProtocols}
+            Fehlende Protokolle: {props.showPercentages ? (
+              props.stats.totalBookingsPast === 0 ?  'NA' : missingProtocolsPercentage + "%"
+            ) : props.stats.missingProtocols}
           </li>
           <li>
-            Nicht erschienene Ratsuchende: {props.showPercentages ? '12%' : stats.noShows}
+            Nicht erschienene Ratsuchende: {props.showPercentages ? (
+              props.stats.totalBookingsPast === 0 ?  'NA' : noShowsPercentage + "%"
+            ) : props.stats.noShows}
           </li>
           <li>
-            Verschickte Evaluations-Emails: {props.showPercentages ? '68%' : stats.evaluationsSent}
+            Verschickte Evaluations-Emails: {props.showPercentages ? (
+              props.stats.totalBookingsPast === 0 ?  'NA' : evalPercentage + "%"
+            ) : props.stats.evaluationsSent}
           </li>
         </ul>
       </div>

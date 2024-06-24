@@ -3,8 +3,7 @@ import { connect } from 'react-redux';
 import axios from '../../../axios-dates/axios-dates';
 
 import CalendarDisplayer from '../../../components/PT/Calendar/CalendarDisplayer';
-import WeekDisplayer from '../../WeekDisplayer/WeekDisplayer';
-import SlotList from '../../../components/RS/SlotList/SlotList';
+import SlimWeekDisplayer from '../../SlimWeekDisplayer/SlimWeekDisplayer';
 import CalendarOptions from './CalendarOptions';
 import RSInfo from '../RSInfo/RSInfo';
 import Modal from '../../../components/UI/Modal/Modal';
@@ -13,41 +12,56 @@ import ConsultationTypeSelection from '../ConsultationTypeSelection/Consultation
 import Spinner from '../../../components/UI/Spinner/Spinner';
 import AuxComp from '../../../hoc/AuxComp/AuxComp';
 
+
 class Calendar extends Component {
-  state = {
-    postedSlots: [],
-    selectedSlot: null,
-    whichModal: null,
-    calendarView: true
+  constructor(props) {
+    super(props);
+    // create list of days for next eight weeks
+    const nextEightWeeks = [];
+    let today = new Date();
+    const currentWeekday = today.getUTCDay();
+    today.setDate(today.getDate() + (1 - currentWeekday)); //set 'today' to current week's monday
+
+    for (let i = 0; i < 8; i++) {
+      for (let j = 0; j < 5; j++) {
+        nextEightWeeks.push(today.toISOString().split('T')[0]);
+        today.setDate(today.getDate() + 1);
+      };
+      today.setDate(today.getDate() + 2);
+    };
+
+    this.state = {
+      days: nextEightWeeks,
+      slots: [],
+      selectedSlot: null,
+      whichModal: null,
+      calendarView: true,
+      loading: false,
+      error: null
+    };
   }
 
-  slotSelectionHandler = (dateAndTime) => {
-    const clickedSlot = this.state.postedSlots.find(slot => slot.slot === dateAndTime);
-    //if datetime without previously created slot is clicked:
-    if (!clickedSlot) {
-      const newSelectedSlot = {
-        date: dateAndTime.split('_')[0],
-        time: dateAndTime.split('_')[1]
-      };
-      this.setState({whichModal: "createNewSlot", selectedSlot: newSelectedSlot});
-      return null;
+  slotSelectionHandler = (slotInfo) => {
+    const newSelectedSlot = {
+      date: slotInfo.date,
+      time: slotInfo.time,
+      rsId: slotInfo.rsId,
+      slotId: slotInfo.slotId
+    };
+    if (slotInfo.available) {
+      this.setState({selectedSlot: newSelectedSlot, whichModal: "showSlot"});
+    } else {
+      this.setState({selectedSlot: newSelectedSlot, whichModal: "showAppointment"});
     }
-    //if datetime with slot is clicked:
-    else {
-      const newSelectedSlot = {
-        date: dateAndTime.split('_')[0],
-        time: dateAndTime.split('_')[1],
-        rsEmail: clickedSlot.rsEmail,
-        rsId: clickedSlot.rsId,
-        terminId: clickedSlot.terminId
-      };
-      if (clickedSlot.available) {
-        this.setState({selectedSlot: newSelectedSlot, whichModal: "showSlot"});
-      } else {
-        this.setState({selectedSlot: newSelectedSlot, whichModal: "showAppointment"});
-      }
-      return null;
-    }
+    return null;
+  }
+  // receives "YYYY-MM-DD" string
+  openAppointmentConfig = (date) => {
+    this.setState({
+      whichModal: "createNewSlot",
+      selectedSlot: {date: date, time: null}
+    });
+    // TODO: Ask for time, then save to db
   }
 
   infoButtonHandler = () => {
@@ -58,35 +72,61 @@ class Calendar extends Component {
     this.setState({calendarView: !this.state.calendarView});
   }
 
-  // consultationTypes are received from ConsultationTypeSelection component
-  createNewSlot = consultationTypes => {
-    const payload = {
+  refreshAppointments = () => {
+    const newSlots = [];
+    const auth = {
+      jwt: this.props.token
+    }
+    axios.post('/pt/my-appointments.php', auth)
+      .then(res => {
+        if (res.data.success === 1) {
+          let slots = res.data.pt_appointments;
+          for (let i in slots) {
+            let slot = slots[i];
+            newSlots.push({
+              slotId: slot.terminId,
+              date: slot.datum,
+              weekday: (new Date(slot.datum)).getUTCDay(),
+              time: slot.fromTime + ' - ' + slot.toTime,
+              available: slot.available === '1',
+              ptId: slot.tutorId,
+              rsId: slot.rsId
+            });
+          };
+          this.setState({slots: newSlots});
+        } else {
+          this.setState({whichModal: res.data.msg})
+        }
+      })
+      .catch(err => {
+        this.setState({whichModal: err.message})
+      })
+  }
+
+  // consultationTypes and times are received from ConsultationTypeSelection component
+  createNewSlot = appointmentInfo => {
+    let payload = {
       date: this.state.selectedSlot.date,
-      time: this.state.selectedSlot.time,
-      rsId: this.state.selectedSlot.rsId,
-      forms: consultationTypes,
+      appointmentInfo: appointmentInfo,
       jwt: this.props.token
     };
 
+    payload = JSON.stringify(payload);
+
     this.setState({whichModal: "spinner"});
 
-    axios.post('/pt/create-appointment.php', payload)
+    axios.post('/pt/create-appointments.php', payload)
       .then(res => {
         if (res.data.success === 1) {
-          const modalMessage = "Der Termin wurde erfolgreich erstellt.";
-          const newSlots = [...this.state.postedSlots];
-          newSlots.push({
-            slot: this.state.selectedSlot.date + "_" + this.state.selectedSlot.time,
-            terminId: res.data.terminId,
-            available: 1,
-            rsId: null,
-            rsEmail: null
-          });
+          const modalMessage = "Termine wurden erfolgreich erstellt.";
+
+          this.refreshAppointments();
+
           this.setState({
-            whichModal: modalMessage,
-            postedSlots: newSlots
+            whichModal: modalMessage
           });
           return;
+
         } else {
           this.setState({whichModal: res.data.msg});
         }
@@ -98,7 +138,7 @@ class Calendar extends Component {
 
   deleteSlotHandler = () => {
     const payload = {
-      terminId: this.state.selectedSlot.terminId,
+      terminId: this.state.selectedSlot.slotId,
       rsId: this.state.selectedSlot.rsId,
       date: this.state.selectedSlot.date,
       time: this.state.selectedSlot.time,
@@ -110,11 +150,10 @@ class Calendar extends Component {
       .then(res => {
         if (res.data.success === 1) {
           const modalMessage = "Der Termin wurde erfolgreich gelöscht.";
-          const dateAndTime = this.state.selectedSlot.date + "_" + this.state.selectedSlot.time;
-          let newSlots = this.state.postedSlots.filter(slot => {
-            return slot.slot !== dateAndTime;
+          let newSlots = this.state.slots.filter(slot => {
+            return slot.slotId !== this.state.selectedSlot.slotId;
           });
-          this.setState({postedSlots: newSlots, whichModal: modalMessage});
+          this.setState({slots: newSlots, whichModal: modalMessage});
         } else {
           this.setState({whichModal: res.data.msg});
         }
@@ -132,28 +171,7 @@ class Calendar extends Component {
   }
 
   componentDidMount () {
-    const newSlots = [];
-    const auth = {
-      jwt: this.props.token
-    }
-    axios.post('/pt/my-appointments.php', auth)
-      .then(res => {
-        let slots = res.data.pt_appointments;
-        for (let i in slots) {
-          let slot = slots[i];
-          newSlots.push({
-            slot: slot.datum + "_" + slot.timeslot,
-            terminId: slot.terminId,
-            available: slot.available === '1',
-            rsId: slot.rsId,
-            rsEmail: slot.rsEmail
-          });
-        };
-        this.setState({postedSlots: newSlots});
-      })
-      .catch(err => {
-        console.log(err);
-      })
+    this.refreshAppointments();
   }
 
   render () {
@@ -161,12 +179,11 @@ class Calendar extends Component {
 
     switch (this.state.whichModal) {
       case "createNewSlot":
-        const dateList = this.state.selectedSlot.date.split('-');
         modalContent = (
           <ConsultationTypeSelection
             onTypeConfirm={this.createNewSlot}
             onModalClose={this.backdropClickHandler}
-            message={"Am " + dateList[2] + "." + dateList[1] + "." + dateList[0] + " um " + this.state.selectedSlot.time + ":00 Uhr bietest du bisher keinen Termin an. Möchtest du einen anbieten?"}
+            message={""}
             buttonText="Termin anbieten"
             />
         );
@@ -174,25 +191,24 @@ class Calendar extends Component {
       case "showSlot":
         const dateAsList = this.state.selectedSlot.date.split('-');
         modalContent = (
-          <AuxComp>
-          <p>Du bietest am {dateAsList[2]}.{dateAsList[1]}.{dateAsList[0]} um {this.state.selectedSlot.time}:00 Uhr einen Termin an.
+          <>
+          <p>Du bietest am {dateAsList[2]}.{dateAsList[1]}.{dateAsList[0]} von {this.state.selectedSlot.time} Uhr einen Termin an.
           Willst du ihn löschen?</p>
           <Button buttonHandler={this.deleteSlotHandler}>Löschen</Button>
-          </AuxComp>
+          </>
         );
         break;
       case "showAppointment":
         modalContent = (
-          <AuxComp>
+          <>
           <p>Der ausgewählte Termin ist reserviert und kann unter "Anmeldungen" verwaltet werden.</p>
           <p>Informationen über den*die Ratsuchende*n kannst du mit diesem Button einsehen:</p>
           <Button buttonHandler={this.infoButtonHandler}>RS-Infos</Button>
           <p>Falls der Termin fälschlicherweise ausgemacht wurde, kannst du ihn mit diesem Button löschen.
           Dieser Vorgang kann nicht rückgängig gemacht werden und Ratsuchende werden beim Löschen nicht automatisch informiert!
-          Meistens ist es besser, die reguläre Archivierungsfunktion unter "Anmeldungen" oder die nebenstehende Krankmeldung
-          zu nutzen.</p>
+          Meistens ist es besser, die reguläre Archivierungsfunktion unter "Anmeldungen" zu nutzen.</p>
           <Button buttonHandler={this.deleteSlotHandler}>Trotz Anmeldung löschen (!)</Button>
-          </AuxComp>
+          </>
         );
         break;
       case "showRS":
@@ -211,19 +227,18 @@ class Calendar extends Component {
           {modalContent}
         </Modal>
         <CalendarDisplayer language={this.props.language}>
-          {this.state.calendarView ?
-            <WeekDisplayer
-              slots={this.state.postedSlots}
-              slotSelectionHandler={this.slotSelectionHandler}
-              numberOfWeeks={8}/> :
-            <SlotList
-              availableSlots={this.state.postedSlots}
-              slotSelectionHandler={this.slotSelectionHandler}
-              numberOfWeeks={8}/>
-            }
           <CalendarOptions
             toggleViewHandler={this.toggleViewHandler}
             calendarView={this.state.calendarView}/>
+
+          <SlimWeekDisplayer
+            days={this.state.days}
+            addNewSlotHandler={this.openAppointmentConfig}
+            slotSelectionHandler={this.slotSelectionHandler}
+            slots={this.state.slots}
+            numberOfWeeks={8}
+            language={this.props.language} />
+
         </CalendarDisplayer>
       </AuxComp>
     );

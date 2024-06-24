@@ -9,11 +9,25 @@
 
 .Slots {
   width: 65%;
+  margin-left: 3em;
 }
 
 .OptionsContainer {
   background-color: white;
-  padding: 2em 0;
+  margin: 1em 0;
+  padding: 0.5em 1.3em;
+}
+
+.LoadMoreButton {
+  height: 4em;
+  font-size: 1.2em;
+  margin-top: 1.5em;
+  background-color: #749d9e;
+  width: 65%;
+  border: none;
+  border-radius: 2em;
+  font-weight: bold;
+  color: white;
 }
 
 @media (max-width: 900px) {
@@ -33,13 +47,13 @@
   .Options {
     width: 95%
   }
-  .Options h2 {
-    display: none;
-  }
-  .OptionsContainer {
-    padding: 0.5em;
-  }
+
   .Slots {
-    width: 100%
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .LoadMoreButton {
+    width: 100%;
   }
 }

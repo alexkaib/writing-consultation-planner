@@ -1,0 +1,17 @@
+.TutorInfoBox {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.TutorInfoBox div {
+  width: auto;
+}
+
+.TutorInfoBox input {
+  width: auto;
+}
+
+.MailInfoBox textarea {
+  height: 10em;
+  width: 100%;
+}

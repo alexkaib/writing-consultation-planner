@@ -23,13 +23,13 @@ $data_array = (array) $decoded_array['data'];
 $user_id = $data_array['userId'];
 
 if (isset($post_data->terminId)) {
-  $sql = "SELECT t.datum, t.timeslot, pt.email, pt.firstName FROM termine t
+  $sql = "SELECT t.datum, t.fromTime, pt.email, pt.firstName FROM termine t
           INNER JOIN peerTutors pt ON (pt.ptId = t.tutorId)
           WHERE t.terminId = '$post_data->terminId'";
 
   $appointment = mysqli_fetch_assoc(mysqli_query($db_conn, $sql));
   $dateString = implode('.', array_reverse(explode('-', $appointment['datum'])));
-  $timeString = $appointment['timeslot'] . ':00 Uhr';
+  $timeString = $appointment['fromTime'] . ':00 Uhr';
   $pt_mail = $appointment['email'];
   $pt_name = $appointment['firstName'];
 
@@ -56,7 +56,7 @@ if (isset($post_data->terminId)) {
 
   require '../send_sz_mail.php';
 
-  $mail_success = send_sz_mail($pt_mail, $mail_subject, $mail_content, $mail_content_plain, null);
+  $mail_success = send_sz_mail($pt_mail, $mail_subject, $mail_content, $mail_content_plain, null, null);
 
   if ($mail_success === 'success') {
     echo json_encode([

@@ -10,14 +10,14 @@ const registration = (props) => {
   let archiveButtonBehavior = null;
 
   let reviewButtonStyle = {color: 'black'};
-  //function needs both terminId to set EvaluationVerschickt=true and rsEmail to send the link with the id
-  let reviewButtonBehavior = () => props.onIconClick([props.terminId, props.rsEmail, props.rsFirstName], 'sendEvalLink');
+  //function needs both terminId to set EvaluationVerschickt=true and rsId to send the email
+  let reviewButtonBehavior = () => props.onIconClick([props.terminId, props.rsId], 'sendEvalLink');
 
   let followUpButtonStyle = {color: 'black'};
   let followUpButtonBehavior = () => props.onIconClick([props.terminId, props.rsId], 'createFollowUp');
 
-  let reserveRoomButtonStyle = {color: 'black'};
-  let reserveRoomButtonBehavior = () => props.onIconClick(props.terminId, 'reserveRoom');
+  // let reserveRoomButtonStyle = {color: 'black'};
+  // let reserveRoomButtonBehavior = () => props.onIconClick(props.terminId, 'reserveRoom');
 
   if (parseInt(props.evaluationSent) === 1) {
     reviewButtonStyle = {color: 'green'};
@@ -35,10 +35,11 @@ const registration = (props) => {
     followUpButtonStyle = {color: 'green'};
     followUpButtonBehavior = () => props.onIconClick(props.followUpId, 'viewFollowUp');
   }
-
+  /*
   if (props.roomReserved === '1') {
     reserveRoomButtonStyle = {color: 'green'};
   }
+  */
 
   let style = styles.Registration;
   if (props.highlighted) {
@@ -98,7 +99,7 @@ const registration = (props) => {
     );
   }
 
-  if (props.ptRole === 'peertutor' || props.ptRole === 'admin') {
+  if (props.ptRole === 'peerTutor' || props.ptRole === 'admin') {
 
     availableButtons.splice(1, 0,
       <button
@@ -123,7 +124,7 @@ const registration = (props) => {
           grading
       </button>
     );
-
+    /*
     availableButtons.splice(1, 0,
       <button
         key='reservation'
@@ -135,13 +136,13 @@ const registration = (props) => {
           home
       </button>
     );
+    */
   }
 
   return (
     <div className={style}>
-      <p>{day}.{month}.{year}, {props.time}:00 Uhr</p>
+      <p>{day}.{month}.{year}, {props.time}</p>
       <p>{props.rsFirstName} {props.rsLastName}</p>
-
       <div className={styles.Buttons}>
         {availableButtons}
       </div>

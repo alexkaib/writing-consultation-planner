@@ -6,7 +6,9 @@ use PHPMailer\PHPMailer\Exception;
 
 require 'vendor/autoload.php';
 
-function send_sz_mail($address, $subject, $html_content, $plain_content, $attachment = null) {
+function send_sz_mail($address, $subject, $html_content, $plain_content, $attachments=null, $ical_data=null) {
+// for debugging
+return 'success';
 
 // get institution email and name from config
 require 'config.php';
@@ -26,16 +28,16 @@ $mail->isSMTP();
 $mail->SMTPDebug = SMTP::DEBUG_OFF;
 
 // uncomment and fill out the following to use your own mail-server
-/*
+
 //Set the hostname of the mail server
-$mail->Host = 'example.com';
+$mail->Host = $SMTP_HOST;
 
 //Use `$mail->Host = gethostbyname('smtp.gmail.com');`
 //if your network does not support SMTP over IPv6,
 //though this may cause issues with TLS
 
 //Set the SMTP port number - 587 for authenticated TLS, a.k.a. RFC4409 SMTP submission
-$mail->Port = 587;
+$mail->Port = $SMTP_PORT;
 
 //Set the encryption mechanism to use - STARTTLS or SMTPS
 $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
@@ -44,20 +46,21 @@ $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
 $mail->SMTPAuth = true;
 
 //Username to use for SMTP authentication - use full email address for gmail
-$mail->Username = 'user';
+$mail->Username = $SMTP_USER;
 
 //Password to use for SMTP authentication
-$mail->Password = 'password';
-*/
+$mail->Password = $SMTP_PW;
+
 
 if (!isset($institution_email_address)) {
   return 'Mailer error: no sender address specified';
 }
-//Set who the message is to be sent from
-$mail->setFrom($institution_email_address, $institution_email_name);
 
 //Set an alternative reply-to address
 $mail->addReplyTo($institution_email_address, $institution_email_name);
+
+//Set who the message is to be sent from
+$mail->setFrom($SENDER_ADDRESS, $institution_email_name);
 
 //Set who the message is to be sent to
 $mail->addAddress($address);
@@ -74,7 +77,7 @@ $message_content = '
   <html lang="de">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Mail vom Schreibzentrum</title>
+    <title>Anmeldung zur Beratung</title>
   </head>
   <body>
 ';
@@ -85,22 +88,31 @@ $message_content .= '
   </body>
   </html>
 ';
+if (isset($html_content)) {
+  $mail->msgHTML($message_content);
+  $mail->AltBody = $plain_content;
+} else {
+  $mail->isHTML(false);
+  $mail->Body = $plain_content;
+}
 
-$mail->msgHTML($message_content);
+if (isset($attachments)) {
+  foreach ($attachments as $attachment) {
+    if (!$mail->addAttachment($attachment['location'], $attachment['name'])) {
+      return 'Failed to attach files.';
+    }
+  }
+}
 
-//Replace the plain text body with one created manually
-$mail->AltBody = utf8_encode($plain_content);
-
-if (isset($attachment)) {
-  $mail->addAttachment($attachment['location'], $attachment['name']);
+if (isset($ical_data)) {
+  $mail->Ical = $ical_data;
+  $mail->AddStringAttachment($ical_data, "beratung.ics", "7bit", "text/calendar; charset=utf-8; method=REQUEST");
+  //$mail->addStringAttachment($ical_data,$file,'base64','text/calendar');
 }
 
 //send the message, check for errors
 if (!$mail->send()) {
-    // FOR DEMO PURPOSES
-    return 'success';
-    // SHOULD BE:
-    // return 'Mailer Error: ' . $mail->ErrorInfo;
+    return 'Mailer Error: ' . $mail->ErrorInfo;
 } else {
     return 'success';
 }

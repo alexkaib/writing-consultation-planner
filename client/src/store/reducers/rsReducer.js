@@ -1,48 +1,17 @@
 const initialState = {
-  termsAccepted: false,
   english: false,
   language: 'de',
   consultationType: '',
   availableSlots: [],
-  selectedSlotAndTutor: '',
-  selectedAppointmentId: '',
+  selectedSlotId: '',
+  selectedTutorId: '',
   selectedFormat: '',
-  rsInfo: {
-    firstName: '',
-    lastName: '',
-    email: '',
-    semester: 1,
-    abschluss: 'bachelor',
-    fach: '',
-    firstLanguage: '',
-    secondLanguage: '',
-    foreignLanguage: '',
-    terminReasons: {
-      ideenEntwickeln: false,
-      unwohlBeimSchreiben: false,
-      dozEmpfehlung: false,
-      wissenschaftlichkeitLernen: false,
-      feedback: false
-    },
-    otherTerminReason: '',
-    reachedBy: {
-      flyer: false,
-      dozierende: false,
-      socialMedia: false,
-      ov: false,
-      kommilitonen: false
-    }
-  }
+  selectedDate: '',
+  selectedTime: ''
 };
 
 const rsReducer = (state = initialState, action) => {
   switch (action.type) {
-    case 'CHECK_TERMS':
-      return {
-        ...state,
-        termsAccepted: !state.termsAccepted
-      };
-
     case 'SWITCH_LANG':
       return {
         ...state,
@@ -59,9 +28,11 @@ const rsReducer = (state = initialState, action) => {
     case 'SELECT_SLOT':
       return {
         ...state,
-        selectedSlotAndTutor: action.timeAndTutor,
-        selectedAppointmentId: action.appointmentId,
-        selectedFormat: action.selectedFormat
+        selectedSlotId: action.slotId,
+        selectedTutorId: action.tutorId,
+        selectedFormat: action.format,
+        selectedDate: action.date,
+        selectedTime: action.time
       };
 
     default:

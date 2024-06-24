@@ -1,0 +1,43 @@
+.FormContainer {
+  width: 80%;
+  margin: auto;
+  padding: 1em;
+  background-color: white;
+  display: flex;
+  flex-wrap: wrap;
+  box-sizing: border-box;
+}
+
+.FormContainer h2 {
+  width: 100%;
+}
+
+.FormContainer>div {
+  width: auto;
+}
+
+.FormContainer .TextBox, .FormContainer .LongText {
+  width: 100%;
+}
+
+
+.TextBox textarea {
+  width: 100%;
+}
+
+.LongText textarea {
+  height: 20em;
+  width: 100%;
+}
+
+@media (max-width: 1200px) and (min-width: 800px) {
+  .FormContainer {
+    width: 90%;
+  }
+}
+
+@media (max-width: 799px) {
+  .FormContainer {
+    width: 99%;
+  }
+}

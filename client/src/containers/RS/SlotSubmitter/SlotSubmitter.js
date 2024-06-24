@@ -3,140 +3,95 @@ import { connect } from 'react-redux';
 import { withRouter } from "react-router-dom";
 import axios from '../../../axios-dates/axios-dates';
 
-import AuxComp from '../../../hoc/AuxComp/AuxComp';
+import config from '../../../config.json';
+import langStrings from '../../../lang/languageStrings.json';
+
 import Modal from '../../../components/UI/Modal/Modal';
 import Spinner from '../../../components/UI/Spinner/Spinner';
-import Form from '../../../components/RS/Submit/Form/Form';
+import FormDisplayer from '../../FormDisplayer/FormDisplayer';
+import ConsentForm from '../../../components/ConsentForm/ConsentForm';
 import SubmitFormButtons from '../../../components/RS/Submit/SubmitFormButtons/SubmitFormButtons';
 
 
 class SlotSubmitter extends Component {
+  constructor(props) {
+    super(props);
 
-  state = {
-    showModal: false,
-    error: null,
-    slotAndTutor: this.props.slotAndTutor,
-    appointmentId: this.props.appointmentId,
-    date: this.props.slotAndTutor.slot.split('_')[0],
-    time: this.props.slotAndTutor.slot.split('_')[1],
-    rsInfo: {
-      firstName: '',
-      lastName: '',
-      email: '',
-      repeatEmail: '',
-      semester: '1-2',
-      abschluss: 'bachelor',
-      fachbereich: 1,
-      fach: '',
-      deutschAls: 'Erstsprache',
-      gender: 'Männlich',
-      erstStudierend: 1,
-      elternHerkunft: 'beide in Deutschland',
-      genre: 'Hausarbeit',
-      comment: '',
-      terminReasons: {
-        themaEntwickeln: false,
-        feedback: false,
-        anfangen: false,
-        struktur: false,
-        unsicher: false,
-        dozEmpfehlung: false,
-        kritik: false,
-        formales: false,
-        sonstige: false
-      },
-      reachedBy: {
-        flyer: false,
-        dozierende: false,
-        socialMedia: false,
-        webseite: false,
-        ov: false,
-        kommilitonen: false,
-        sz: false
+    const initialRsInfo = {};
+
+    config.registration_form.forEach(formElement => {
+      if (formElement.type === 'heading') return;
+      if (formElement.type === 'checkboxes') {
+        const checkboxDict = {};
+        formElement.options.forEach(option => {
+          checkboxDict[option.value] = false;
+        });
+        initialRsInfo[formElement.db_name] = checkboxDict;
+      } else if (formElement.type === 'select') {
+        initialRsInfo[formElement.db_name] = formElement.options[0].value;
+      } else {
+        initialRsInfo[formElement.db_name] = null;
       }
-    },
-    textfile: null,
-    invalidForm: false,
-    ptName: null
+    });
+
+    this.state = {
+      showModal: false,
+      error: null,
+      rsInfo: initialRsInfo,
+      termsAccepted: false,
+      invalidForm: false
+    }
   }
 
-  inputHandler = (event) => {
 
-    const currentInfo = {...this.state.rsInfo};
-
-    switch (event.target.type) {
-      case 'text':
-      case 'email':
-      case 'select-one':
-        currentInfo[event.target.id] = event.target.value;
-        this.setState({
-          rsInfo: currentInfo
-        });
-        break;
-
-      case 'checkbox':
-        const checkboxesName = event.target.parentElement.parentElement.id;
-        const clickedBox = event.target.value;
-        const updatedCheckboxes = currentInfo[checkboxesName];
-        updatedCheckboxes[clickedBox] = !updatedCheckboxes[clickedBox];
-        currentInfo[checkboxesName] = updatedCheckboxes;
-        this.setState({
-          rsInfo: currentInfo
-        });
-        break;
-
-      case 'file':
-        this.setState({textfile: event.target.files[0]});
-        break;
-
-      default:
-      currentInfo[event.target.id] = event.target.value;
-      this.setState({
-        rsInfo: currentInfo
-      });
-    }
-  };
 
   submitHandler = () => {
     const currentInfo = {...this.state.rsInfo};
-    if (currentInfo.firstName < 1 || currentInfo.lastName < 1 || !(currentInfo.email.includes('@')) || currentInfo.email !== currentInfo.repeatEmail) {
+
+    if (currentInfo.first_name < 1 || currentInfo.last_name < 1 || !(currentInfo.email.includes('@'))) {
       document.body.scrollTop = 0; // For Safari
       document.documentElement.scrollTop = 0;
-      this.setState({invalidForm: true});
+      this.setState({error: langStrings[this.props.language].error_form, showModal: true});
+      return null;
+    }
+    else if (!this.state.termsAccepted) {
+      this.setState({error: langStrings[this.props.language].error_privacy, showModal: true});
       return null;
     }
     else {
-
       this.setState({showModal: true});
 
       const formData = new FormData();
 
       const payload = {
         appointmentId: this.props.appointmentId,
-        date: this.props.slotAndTutor.slot.split('_')[0],
-        time: this.props.slotAndTutor.slot.split('_')[1],
-        ptId: this.props.slotAndTutor.ptId,
+        ptId: this.props.tutorId,
         consultationType: this.props.consultationType,
+        date: this.props.selectedDate,
+        time: this.props.selectedTime,
         format: this.props.selectedFormat,
-        termsAccepted: this.props.termsAccepted,
-        rsInfo: this.state.rsInfo
+        rsInfo: {}
       };
+      // append files to form directly, put other form data into rsInfo property of payload
+      for (const [key, value] of Object.entries(currentInfo)) {
+        if (value instanceof FileList) {
+          let totalFilesize = 0;
+          for (const file of value) {
+            totalFilesize += ((file.size/1024)/1024).toFixed(4); // MB
+            formData.append(file.name, file);
+          }
+          if (totalFilesize > config.max_file_size) {
+            this.setState({showModal: true, error: langStrings[this.props.language].error_file_size});
+            return null;
+          }
+        } else {
+          if (value === null) continue;
+          payload.rsInfo[key] = value;
+        }
+      }
 
       formData.append("payload", JSON.stringify(payload));
 
-      if (this.state.textfile) {
-        const filesize = ((this.state.textfile.size/1024)/1024).toFixed(4); // MB
-        if (filesize <= 10) {
-          formData.append(
-            "textfile",
-            this.state.textfile,
-            this.state.textfile.name
-          );
-        } else {
-          this.setState({showModal: true, error: "Ausgewählte Textdatei ist größer als 10 MB."});
-          return null;
-        }
-      }
       axios.post('/rs/confirm-appointment.php', formData)
       .then(res => {
         console.log(res);
@@ -153,6 +108,15 @@ class SlotSubmitter extends Component {
         this.setState({showModal: true, error: err.message});
       })
     }
+  }
+
+  updateRsInfo = (newInfo) => {
+    this.setState({rsInfo: newInfo});
+  }
+
+  termsCheckHandler = () => {
+    const termsAccepted = this.state.termsAccepted;
+    this.setState({termsAccepted: !termsAccepted});
   }
 
   goBackHandler = () => {
@@ -176,8 +140,6 @@ class SlotSubmitter extends Component {
   }
 
   render () {
-    const currentRSInfo = {...this.state.rsInfo};
-
     let modalContent = (
       <Spinner />
     );
@@ -185,42 +147,49 @@ class SlotSubmitter extends Component {
     if (this.state.error) {
       modalContent = (
         <div>
-        <p>Beim Reservieren des Termins ist ein Fehler aufgetreten. Falls das Problem bestehen bleibt, kontaktiere uns bitte unter <a href="mailto:schreibzentrum@dlist.uni-frankfurt.de">schreibzentrum@dlist.uni-frankfurt.de</a>.</p>
-        <p>Fehlermeldung: {this.state.error}</p>
+        <p>{langStrings[this.props.language].registration_error}</p>
+        <p>{langStrings[this.props.language].error_description}: {this.state.error}</p>
         </div>
       );
     }
 
     return (
-      <AuxComp>
+      <>
         <Modal visible={this.state.showModal} onBackdropClick={this.backdropClickHandler}>
           {modalContent}
         </Modal>
-        <Form
-          date={this.state.date}
-          time={this.state.time}
-          rsInfo={this.state.rsInfo}
-          inputHandler={this.inputHandler}
-          invalidForm={this.state.invalidForm}
-          english={this.props.english} />
+        <FormDisplayer
+          formStructure={config.registration_form}
+          updateParentState={this.updateRsInfo}
+          formInfo={this.state.rsInfo}
+          goBackHandler={this.goBackHandler}
+          submitHandler={this.submitHandler}/>
+
+        <ConsentForm
+          language={this.props.language}
+          onTermsCheck={this.termsCheckHandler}
+          termsAccepted={this.state.termsAccepted} />
+
         <SubmitFormButtons
-          available={currentRSInfo.firstName.length >= 1 && currentRSInfo.lastName.length >= 1 && currentRSInfo.email.includes('@')}
+          available={true}
           goBackHandler={this.goBackHandler}
           submitHandler={this.submitHandler}
           english={this.props.english} />
-      </AuxComp>
+      </>
     );
   }
 };
 
 const mapStateToProps = (state) => {
   return {
-    slotAndTutor: state.rs.selectedSlotAndTutor,
-    appointmentId: state.rs.selectedAppointmentId,
+    tutorId: state.rs.selectedTutorId,
+    appointmentId: state.rs.selectedSlotId,
     consultationType: state.rs.consultationType,
     selectedFormat: state.rs.selectedFormat,
-    termsAccepted: state.rs.termsAccepted,
-    english: state.rs.english
+    selectedDate: state.rs.selectedDate,
+    selectedTime: state.rs.selectedTime,
+    english: state.rs.english,
+    language: state.rs.language
   };
 };
 

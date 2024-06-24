@@ -2,20 +2,18 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import axios from '../../../axios-dates/axios-dates';
 import { withRouter } from "react-router-dom";
-import DatePicker, { registerLocale } from 'react-datepicker';
-import "react-datepicker/dist/react-datepicker.css";
-import de from "date-fns/locale/de";
-import format from "date-fns/format";
 import RegistrationsList from '../../../components/PT/Registrations/RegistrationsList/RegistrationsList';
 
 import RSInfo from '../RSInfo/RSInfo';
+import FollowUpForm from '../../../components/PT/FollowUpForm/FollowUpForm';
 import Modal from '../../../components/UI/Modal/Modal';
 import Button from '../../../components/UI/Button/Button';
 import Input from '../../../components/UI/Input/Input';
 import Spinner from '../../../components/UI/Spinner/Spinner';
 import AuxComp from '../../../hoc/AuxComp/AuxComp';
 
-registerLocale("de", de);
+import langStrings from '../../../lang/languageStrings.json';
+
 
 class Registrations extends Component {
   state = {
@@ -27,7 +25,11 @@ class Registrations extends Component {
     loading: true,
     error: null,
     success: null,
-    followUpDateTime: new Date(),
+    followUpInfo: {
+      date: '',
+      from: '',
+      to: ''
+    },
     selectedTerminId: null,
     selectedRsId: null,
     evalPayload: null,
@@ -53,11 +55,10 @@ class Registrations extends Component {
         break;
 
       case 'sendEvalLink':
-        const [appointmentId, rsEmail, rsName] = id;
+        const [appointmentId, tuteeId] = id;
         const payload = {
           terminId: appointmentId,
-          rsEmail: rsEmail,
-          rsName: rsName,
+          rsId: tuteeId,
           role: this.props.role
         };
         this.setState({evalPayload: payload, showModal: true});
@@ -137,8 +138,6 @@ class Registrations extends Component {
       appointment => appointment.terminId === id
     )
 
-    const weekday = new Date(selectedAppointment.date).getDay();
-
     if (selectedAppointment.roomReserved === '1') {
       this.setState({success: 'Für diesen Termin ist der Beratungsraum bereits für dich reserviert.', loading: false})
     } else {
@@ -187,26 +186,25 @@ class Registrations extends Component {
       })
   }
 
+  inputHandler = e => {
+    const currentInfo = {...this.state.followUpInfo};
+    currentInfo[e.target.id] = e.target.value;
+    this.setState({followUpInfo: currentInfo});
+  }
+
   saveFollowUpHandler = () => {
-    const followUpDateTime = this.state.followUpDateTime;
-
-    const followUpDate = format(followUpDateTime, 'yyyy-MM-dd');
-    const followUpTime = format(followUpDateTime, 'HH');
-    const followUpWeekday = followUpDateTime.getDay();
-
     const payload = {
-      followUpDate: followUpDate,
-      followUpTime: followUpTime,
-      followUpWeekday: followUpWeekday,
+      followUpDate: this.state.followUpInfo.date,
+      followUpFromTime: this.state.followUpInfo.from,
+      followUpToTime: this.state.followUpInfo.to,
       previousTerminId: this.state.selectedTerminId,
       rsId: this.state.selectedRsId,
       jwt: this.props.token
     };
-
     axios.post('/pt/create-follow-up.php', payload)
       .then(res => {
         if (res.data.success === 1) {
-          this.setState({showDatePicker: false, success: 'Der Termin für die Folgeberatung wurde erstellt!'})
+          this.setState({showDatePicker: false, success: 'Der Termin für die Folgeberatung wurde erstellt.'})
         } else {
           this.setState({showDatePicker: false, error: res.data.msg + ' Der Folgeberatungstermin wurde nicht erstellt.'});
         }
@@ -221,6 +219,7 @@ class Registrations extends Component {
     payload["jwt"] = this.props.token;
     axios.post('/pt/send-evaluation.php', payload)
       .then(res => {
+        console.log(res)
         if (res.data.success === 1) {
           this.setState({evalPayload: null, success: res.data.msg});
         } else {
@@ -303,10 +302,10 @@ class Registrations extends Component {
             newRegistrations.push({
               terminId: registration.terminId,
               date: registration.datum,
-              time: registration.timeslot,
+              time: registration.fromTime + ' - ' + registration.toTime,
               rsId: registration.rsId,
-              rsFirstName: registration.firstName,
-              rsLastName: registration.lastName,
+              rsFirstName: registration.first_name,
+              rsLastName: registration.last_name,
               rsEmail: registration.email,
               evaluationSent: registration.evaluationSent,
               protocolId: registration.protocolId,
@@ -369,7 +368,7 @@ class Registrations extends Component {
 
     if (this.state.evalPayload) {
       modalContent = (
-        <AuxComp>
+        <>
           <p>Möchtest du einen Evaluationslink für die ausgewählte Beratung verschicken?</p>
           <div style={{display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap'}}>
             <div style={{width: '200px'}}>
@@ -379,70 +378,35 @@ class Registrations extends Component {
               <Button buttonHandler={this.confirmEvalHandler}>Evaluation senden</Button>
             </div>
           </div>
-        </AuxComp>
+        </>
       );
     }
 
     if (this.state.archivePayload) {
-      if (this.props.role === 'librarian') {
-        modalContent = (
-          <AuxComp>
-            <p>Bitte gib für statistische Zwecke an, ob die ratsuchende Person anwesend war und die Beratung wie geplant stattfinden konnte.</p>
-
-            <div style={{display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap'}}>
-              <div style={{width: '200px'}}>
-                <Button buttonHandler={() => this.confirmArchiveHandlerWithoutProtocol(true)}>Stattgefunden</Button>
-              </div>
-              <div style={{width: '200px'}}>
-                <Button buttonHandler={() => this.confirmArchiveHandlerWithoutProtocol(false)}>Nicht stattgefunden</Button>
-              </div>
+      modalContent = (
+        <>
+          <p>Bist du sicher, dass du den ausgewählten Termin archivieren möchtest? Falls keine Folgeberatung existiert, werden dadurch die Kontaktinformationen der*des Ratsuchenden unwiderruflich gelöscht.</p>
+          <div style={{display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap'}}>
+            <div style={{width: '200px'}}>
+              <Button buttonHandler={this.backdropClickHandler}>Zurück</Button>
             </div>
-
-            <p><em>Achtung: Durch die Archivierung werden die Kontaktdaten des*der Ratsuchenden unwiderruflich gelöscht, falls keine Folgeberatung besteht!</em></p>
-          </AuxComp>
-        );
-      } else {
-        modalContent = (
-          <AuxComp>
-            <p>Bist du sicher, dass du den ausgewählten Termin archivieren möchtest? Falls keine Folgeberatung existiert, werden dadurch die Kontaktinformationen der*des Ratsuchenden unwiderruflich gelöscht.</p>
-            <div style={{display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap'}}>
-              <div style={{width: '200px'}}>
-                <Button buttonHandler={this.backdropClickHandler}>Zurück</Button>
-              </div>
-              <div style={{width: '200px'}}>
-                <Button buttonHandler={this.confirmArchiveHandler}>Archivieren</Button>
-              </div>
+            <div style={{width: '200px'}}>
+              <Button buttonHandler={this.confirmArchiveHandler}>Archivieren</Button>
             </div>
-          </AuxComp>
-        );
-      }
+          </div>
+        </>
+      );
     }
 
     if (this.state.showDatePicker) {
-      const ExampleCustomInput = ({ value, onClick }) => (
-        <button style={{height:'40px', margin:'10px'}} onClick={onClick}>
-          {value}
-        </button>
-      );
       modalContent = (
-        <div style={{height: '50vh'}}>
-          <p style={{textAlign: 'center'}}>Wähle Datum und Uhrzeit für eine Folgeberatung:</p>
-          <div style={{display: 'flex', justifyContent: 'center'}}>
-          <DatePicker
-            selected={this.state.followUpDateTime}
-            onChange={date => this.setState({followUpDateTime: date})}
-            showTimeSelect
-            locale="de"
-            timeCaption="Uhrzeit"
-            timeIntervals={60}
-            timeFormat="HH:mm"
-            dateFormat="dd.MM.yyyy"
-            customInput={<ExampleCustomInput />} />
-            <div style={{width: '200px'}}>
-              <Button buttonHandler={this.saveFollowUpHandler}>Speichern</Button>
-            </div>
-          </div>
-        </div>
+        <>
+          <FollowUpForm
+            onChange={this.inputHandler}
+            info={this.state.followUpInfo}
+            saveFollowUpHandler={this.saveFollowUpHandler}
+            language={this.props.language}/>
+        </>
       )
     }
 
@@ -480,8 +444,8 @@ class Registrations extends Component {
         <Modal visible={this.state.showModal} onBackdropClick={this.backdropClickHandler}>
           {modalContent}
         </Modal>
-        <h1 style={{textAlign: 'center'}}>Aktuelle Anmeldungen</h1>
-        <h3>Verwalte hier registierte Schreibberatungen. Du kannst Informationen über Ratsuchende abrufen, Protokolle schreiben, Folgeberatungen vereinbaren und Termine archivieren*.</h3>
+        <h1 style={{textAlign: 'center'}}>{langStrings[this.props.language].registrations}</h1>
+        <h3>{langStrings[this.props.language].registrations_desc}</h3>
         {this.state.loading?
           <Spinner /> :
           <RegistrationsList
@@ -500,7 +464,8 @@ const mapStateToProps = (state) => {
     loggedIn: state.pt.loggedIn,
     ptId: state.pt.ptId,
     token: state.pt.token,
-    role: state.pt.role
+    role: state.pt.role,
+    language: state.rs.language
   };
 };
 

@@ -15,7 +15,7 @@
   margin: auto;
 }
 
-.Button:hover, .Button:focus, .Button.active {
+.Button:hover, .Button.active {
   background-color: cadetblue;
   color: white;
   cursor: pointer;

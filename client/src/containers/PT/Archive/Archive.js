@@ -6,6 +6,8 @@ import { connect } from 'react-redux';
 import axios from '../../../axios-dates/axios-dates';
 import { withRouter } from "react-router-dom";
 
+import protocolConfig from '../../../protocol_config.json';
+
 import ProtocolSearch from '../../../components/PT/Archive/ProtocolSearch/ProtocolSearch';
 import ResultDisplayer from '../../../components/PT/Archive/ResultDisplayer/ResultDisplayer';
 import RSInfo from '../RSInfo/RSInfo';
@@ -36,7 +38,6 @@ class Archive extends Component {
       case 'email':
       case 'select-one':
         currentParams[event.target.id] = event.target.value;
-        console.log(event.target)
         this.setState({
           searchParams: currentParams
         });
@@ -63,7 +64,20 @@ class Archive extends Component {
 
   submitSearchHandler = e => {
     e.preventDefault();
-    const payload = {...this.state.searchParams, jwt: this.props.token}
+
+    // tell server to look for search term in columns that contain text
+    const colsToSearch = [];
+    protocolConfig.protocol_form.forEach(formObject => {
+      if (formObject.type === 'short_text' || formObject.type === 'medium_text' || formObject.type === 'long_text') {
+        colsToSearch.push(formObject.db_name);
+      }
+    });
+
+    const payload = {
+      ...this.state.searchParams,
+      colsToSearch: colsToSearch,
+      jwt: this.props.token
+    }
 
     this.setState({showResults: true, searchLoading: true}, () => {
       axios.post('/pt/get-protocols.php', payload)
@@ -136,7 +150,7 @@ class Archive extends Component {
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', 'Protokoll.pdf'); //or any other extension
+            link.setAttribute('download', 'Protokoll.pdf');
             document.body.appendChild(link);
             link.click();
         })

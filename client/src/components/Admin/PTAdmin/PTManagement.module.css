@@ -1,0 +1,30 @@
+.Box {
+  background-color: #fff;
+  padding: 0.3em 1em;
+  padding-bottom: 2em;
+  margin-bottom: 1em;
+}
+
+.Box tr {
+  border-bottom: 1px solid #ddd;
+}
+
+.Box table, th, td {
+  border-collapse: collapse;
+}
+
+.Box th, td {
+  padding: 0.3em;
+}
+
+.TutorRows {
+  cursor: pointer;
+}
+
+.TutorRows td:last-child {
+  padding-left: 3em;
+}
+
+.TutorRows:hover {
+  background-color: #d3e9ea;
+}

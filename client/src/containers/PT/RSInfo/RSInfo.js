@@ -2,47 +2,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import axios from '../../../axios-dates/axios-dates';
 
-const consultationTypeDict = {
-  student: "Fachübergreifend (Deutsch)",
-  english_student: "Fachübergreifend (Englisch)",
-  student_english: "Fachübergreifend (Englisch)",
-  student_reading: "Leseberatung",
-  germanistik: "Fachspezifisch (Germanistik)",
-  ethnologie: "Fachspezifisch (Ethnologie)",
-  phd: "Beratung für Promovierende (Deutsch)",
-  english_phd: "Beratung für Promovierende (Englisch)",
-  phd_english: "Beratung für Promovierende (Englisch)",
-  textfeedback: "Schriftliches Textfeedback per E-Mail",
-  research: "Rechercheberatung",
-  methods: "Methodenberatung",
-  go: "Orientierungsstudium"
-};
-
-const mediumDict = {
-  both: 'Egal',
-  digital: 'Online',
-  analogue: 'In Präsenz'
-};
+import langStrings from '../../../lang/languageStrings.json';
+import config from '../../../config.json';
 
 class RSInfo extends Component {
-  state = {
-    firstName: "",
-    lastName: "",
-    email: "",
-    medium: "",
-    angemeldetAls: "",
-    semester: "",
-    abschluss: "",
-    fachbereich: "",
-    fach: "",
-    deutschAls: "",
-    erstStudierend: true,
-    terminReasons: "",
-    genre: "",
-    gender: "",
-    reachedBy: "",
-    comment: ""
-  }
+  state = {}
 
   componentDidMount () {
     const url = '/pt/my-tutee.php';
@@ -54,31 +18,9 @@ class RSInfo extends Component {
       .then(res => {
         if (res.data.success === 1) {
           const rsInfo = res.data.rsInfo;
-          const newRS = {
-            firstName: rsInfo["firstName"],
-            lastName: rsInfo["lastName"],
-            email: rsInfo["email"],
-            angemeldetAls: rsInfo["angemeldetAls"],
-            semester: rsInfo["semester"],
-            abschluss: rsInfo["abschluss"],
-            fachbereich: rsInfo["fachbereich"],
-            fach: rsInfo["fach"],
-            deutschAls: rsInfo["deutschAls"],
-            erstStudierend: rsInfo["erstStudierend"] === 1,
-            terminReasons: rsInfo["terminReasons"],
-            genre: rsInfo["genre"],
-            gender: rsInfo["gender"],
-            reachedBy: rsInfo["reachedBy"],
-            comment: rsInfo["commentField"],
-            otherReasons: rsInfo["otherTerminReasons"],
-            topic: rsInfo["topic"]
-          };
-          if (!rsInfo["beratungsform"]) {
-            newRS["medium"] = mediumDict[rsInfo.format];
-          } else {
-            newRS["medium"] = mediumDict[rsInfo.beratungsform];
-          }
-          this.setState(newRS);
+          const typeInfo = res.data.typeInfo;
+          rsInfo['bookedType'] = this.props.language === 'de' ? typeInfo.name_de : typeInfo.name_en;
+          this.setState(rsInfo);
         }
       })
       .catch(err => {
@@ -87,33 +29,20 @@ class RSInfo extends Component {
   }
 
   render () {
-    const displayedInfo = [
-      <li key='name'><strong>Name:</strong> {this.state.firstName} {this.state.lastName}</li>,
-      <li key='email'><strong>E-Mail:</strong> {this.state.email}</li>,
-      <li key='medium'><strong>Beratungsmedium:</strong> {this.state.medium}</li>,
-      <li key='type'><strong>Beratungsform:</strong> {consultationTypeDict[this.state.angemeldetAls]}</li>,
+    const displayedInfo = [];
+    config.registration_form.forEach(entry => {
+      if (this.state[entry.db_name]) {
+        displayedInfo.push(
+          <li key={entry.db_name}>
+            <strong>{entry.label[this.props.language]}:</strong> {this.state[entry.db_name]}
+          </li>
+        );
+      }
+    });
 
-      <li key='fachbereich'><strong>Fachbereich:</strong> {this.state.fachbereich}</li>,
-      <li key='subject'><strong>Fach:</strong> {this.state.fach}</li>,
-      <li key='semester'><strong>Semester:</strong> {this.state.semester}</li>,
-    ];
-    if (this.props.role === 'peertutor') {
-      displayedInfo.push(
-        <li key='reasons'><strong>Terminanlass:</strong> {this.state.terminReasons}</li>,
-        <li key='genre'><strong>Textsorte:</strong> {this.state.genre}</li>,
-        <li key='gender'><strong>Geschlecht:</strong> {this.state.gender}</li>,
-        <li key='language'><strong>Deutsch ist:</strong> {this.state.deutschAls}</li>
-      );
-    }
-    else if (this.props.role === 'methodTutor') {
-      displayedInfo.push(
-        <li key='reasons'><strong>Terminanlass:</strong> {this.state.terminReasons}</li>,
-        <li key='genre'><strong>Sonstige Gründe:</strong> {this.state.otherReasons}</li>,
-        <li key='language'><strong>Thema/Fragestellung</strong> {this.state.topic}</li>
-      );
-    }
-    displayedInfo.push(
-      <li key='comment'><strong>Kommentar:</strong> {this.state.comment}</li>
+    displayedInfo.splice(3, 0,
+      <li key='type'><strong>{langStrings[this.props.language].consultation_type}:</strong> {this.state.bookedType}</li>,
+      <li key='format'><strong>Format:</strong> {langStrings[this.props.language][this.state.bookedFormat]}</li>
     );
 
     return (
@@ -132,7 +61,8 @@ const mapStateToProps = (state) => {
     loggedIn: state.pt.loggedIn,
     ptId: state.pt.ptId,
     token: state.pt.token,
-    role: state.pt.role
+    role: state.pt.role,
+    language: state.rs.language
   };
 };
 

@@ -14,12 +14,12 @@ const landing = (props) => {
   ));
 
   return (
-    <AuxComp>
+    <>
     <h1 style={{textAlign:'center'}}>{props.greeting}</h1>
     <div className={styles.Landing}>
       {navButtons}
     </div>
-    </AuxComp>
+    </>
   );
 }
 

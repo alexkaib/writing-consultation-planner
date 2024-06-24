@@ -2,11 +2,13 @@
 
 .DS_Store
 
-#libraries
+# libraries
 composer.phar
 /vendor/
 /uploads/
 
-#local config
-/config_actual.php
-/db_connection_actual.php
+# local config
+/local_config
+
+# testing
+/mail_test.php

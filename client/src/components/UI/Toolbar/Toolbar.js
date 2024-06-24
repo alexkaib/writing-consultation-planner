@@ -9,7 +9,7 @@ const toolbar = props => {
   return (
     <div className={styles.Toolbar}>
       <Logo />
-      <NavItems />
+      {props.menuExtended ? <NavItems /> : null}
       <LangLogo />
     </div>
   )

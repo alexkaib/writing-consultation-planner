@@ -10,7 +10,7 @@ const resultDisplayer = (props) => {
       const [year, month, day] = protocol.datum.split('-');
       return (
         <div key={protocol.protocolId} className={styles.Protocol}>
-          <p>{day}.{month}.{year} ({protocol.timeslot}:00 Uhr)</p>
+          <p>{day}.{month}.{year} ({protocol.fromTime} Uhr)</p>
 
           <div className={styles.Buttons}>
             <span
@@ -23,11 +23,13 @@ const resultDisplayer = (props) => {
               className="material-icons">
                 grading
             </span>
+            {/*
             <span
               onClick={() => props.onIconClick(protocol.protocolId, 'downloadProtocol')}
               className="material-icons">
                 download
             </span>
+            */}
           </div>
         </div>
       )

@@ -8,10 +8,12 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import rsReducer from './store/reducers/rsReducer';
 import ptReducer from './store/reducers/ptReducer';
+import adminReducer from './store/reducers/adminReducer';
 
 const rootReducer = combineReducers({
   rs: rsReducer,
-  pt: ptReducer
+  pt: ptReducer,
+  admin: adminReducer
 });
 
 const store = createStore(rootReducer);

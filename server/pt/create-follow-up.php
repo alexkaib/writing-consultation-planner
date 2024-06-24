@@ -25,15 +25,15 @@ if (isset($post_data->jwt)) {
         $post_data = json_decode(file_get_contents("php://input"));
 
         if (isset($post_data->followUpDate) &&
-            isset($post_data->followUpTime) &&
+            isset($post_data->followUpFromTime) &&
+            isset($post_data->followUpToTime) &&
             isset($post_data->previousTerminId) &&
-            isset($post_data->rsId) &&
-            isset($post_data->followUpWeekday)
+            isset($post_data->rsId)
           ) {
 
           $date = $post_data->followUpDate;
-          $time = $post_data->followUpTime;
-          $weekday = $post_data->followUpWeekday;
+          $fromTime = $post_data->followUpFromTime;
+          $toTime = $post_data->followUpToTime;
           $previous_termin_id = $post_data->previousTerminId;
           $rsId = $post_data->rsId;
 
@@ -41,7 +41,8 @@ if (isset($post_data->jwt)) {
 
           if (preg_match($date_regex, $date)) {
 
-            $follow_up_termin_query = mysqli_query($db_conn, "SELECT * FROM termine WHERE tutorId='$user_id' AND datum='$date' AND timeslot='$time'");
+            $follow_up_termin_query = mysqli_query($db_conn, "SELECT * FROM termine
+              WHERE tutorId='$user_id' AND datum='$date' AND fromTime='$fromTime' AND toTime='$toTime'");
 
             //checks if appointment is already being offered at given time
             if (mysqli_num_rows($follow_up_termin_query) > 0) {
@@ -53,8 +54,8 @@ if (isset($post_data->jwt)) {
               //updates existing database-entry
               else {
                 $follow_up_termin_id = $follow_up_termin['terminId'];
-                $stmt = $db_conn->prepare("UPDATE termine SET available=?, rsId=? WHERE terminId=?");
-                $stmt->bind_param("iii", $avail, $rsId, $follow_up_termin_id);
+                $stmt = $db_conn->prepare("UPDATE termine SET available=?, rsId=?, predecessorId=? WHERE terminId=?");
+                $stmt->bind_param("iiii", $avail, $rsId, $previous_termin_id, $follow_up_termin_id);
                 $avail = 0;
                 $stmt->execute();
 
@@ -77,8 +78,8 @@ if (isset($post_data->jwt)) {
             }
             //No appointment exists, so create new one
             else {
-              $stmt = $db_conn->prepare("INSERT INTO termine (datum, weekday, timeslot, tutorId, available, rsId) VALUES (?, ?, ?, ?, ?, ?)");
-              $stmt->bind_param("siiiii", $date, $weekday, $time, $user_id, $avail, $rsId);
+              $stmt = $db_conn->prepare("INSERT INTO termine (datum, fromTime, toTime, tutorId, available, rsId, predecessorId) VALUES (?, ?, ?, ?, ?, ?, ?)");
+              $stmt->bind_param("sssiiii", $date, $fromTime, $toTime, $user_id, $avail, $rsId, $previous_termin_id);
               $avail = 0;
               $stmt->execute();
 

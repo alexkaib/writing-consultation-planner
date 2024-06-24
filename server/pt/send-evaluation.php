@@ -25,59 +25,22 @@ if (isset($post_data->jwt)) {
 
         $post_data = json_decode(file_get_contents("php://input"));
 
-        if (isset($post_data->terminId) && isset($post_data->rsEmail) && isset($post_data->rsName)) {
+        if (isset($post_data->terminId) && isset($post_data->rsId)) {
           $terminId = $post_data->terminId;
+          $rsId = $post_data->rsId;
+          // get rs email and their consultation type's eval mail text
+          $sql = "SELECT rs.email, ct.eval_mail FROM ratsuchende rs
+            INNER JOIN consultationTypes ct ON rs.bookedTypeId=ct.id WHERE rs.rsId='$rsId'";
 
-          $headers   = array();
-          $headers[] = "MIME-Version: 1.0";
-          $headers[] = "Content-type: text/html; charset=utf-8";
-          $headers[] = "From: schreibzentrum@dlist.uni-frankfurt.de";
+          $res = mysqli_query($db_conn, $sql);
+          $row = mysqli_fetch_assoc($res);
+          $rs_email = $row['email'];
+          $rs_mail_content = $row['eval_mail'];
 
-          $message = '
-            <html>
-            <head>
-              <title>Evaluation deiner Schreibberatung</title>
-            </head>
-            <body>
-              <p>Hallo '.$post_data->rsName.',</p>
-              <br>
-              <p>du hattest vor Kurzem eine Schreibberatung. Es würde uns helfen, wenn du uns ein kurzes, anonymes Feedback hinterlassen würdest. Bitte verwende dafür folgenden Link:</p>
-              <p><a href="https://online-eval.studiumdigitale.uni-frankfurt.de/evasys/online.php?p=sb2021">https://online-eval.studiumdigitale.uni-frankfurt.de/evasys/online.php?p=sb2021</a></p>
-              <p>Damit wir dein Feedback zuordnen können, gib bei der Befragung bitte folgende Beratungs-ID an: '.$terminId.'</p>
-              <br>
-              <p>Vielen Dank für deine Unterstützung,</p>
-              <p>Dein Schreibzentrum</p>
-            </body>
-            </html>
-            ';
+          require '../send_sz_mail.php';
+          $rs_mail_success = send_sz_mail($rs_email, "Evaluation deiner Beratung", null, $rs_mail_content, null);
 
-          if ($post_data->role==="methodTutor") {
-            $message = '
-              <html>
-              <head>
-                <title>Evaluation der Methodenberatung</title>
-              </head>
-              <body>
-                <p>Hallo '.$post_data->rsName.',</p>
-                <br>
-                <p>du hattest vor Kurzem eine Methodenberatung. Es würde uns helfen, wenn du uns ein kurzes, anonymes Feedback hinterlassen würdest. Bitte verwende dafür folgenden Link:</p>
-                <p><a href="https://online-eval.studiumdigitale.uni-frankfurt.de/evasys/online.php?p=Peer-Beratung">https://online-eval.studiumdigitale.uni-frankfurt.de/evasys/online.php?p=Peer-Beratung</a></p>
-                <p>Damit wir dein Feedback zuordnen können, gib bei der Befragung bitte folgende Beratungs-ID an: '.$terminId.'</p>
-                <br>
-                <p>Vielen Dank für deine Unterstützung,</p>
-                <p>Dein Methodenzentrum</p>
-              </body>
-              </html>
-              ';
-          }
-
-          if ($post_data->role==="methodTutor") {
-            $success = mail($post_data->rsEmail, 'Wie war die Methodenberatung?', $message, implode("\r\n",$headers));
-          } else {
-            $success = mail($post_data->rsEmail, 'Wie war die Schreibberatung?', $message, implode("\r\n",$headers));
-          }
-
-          if ($success) {
+          if ($rs_mail_success) {
             $update_query = mysqli_query($db_conn, "UPDATE termine SET evaluationSent=1 WHERE terminId='$terminId'");
             echo json_encode([
                 "success" => 1,

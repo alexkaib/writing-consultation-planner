@@ -39,7 +39,7 @@ if (isset($post_data->jwt)) {
           if (isset($post_data->rsId)) {
             $rsId = $post_data->rsId;
             $otherConsultationsWithSameRS = mysqli_query($db_conn, "SELECT terminId FROM termine WHERE rsId='$rsId'");
-            if (mysqli_num_rows($otherConsultationsWithSameRS) > 0) {
+            if (mysqli_num_rows($otherConsultationsWithSameRS) === 0) {
               $deleteRS = mysqli_query($db_conn, "DELETE FROM `ratsuchende` WHERE `rsId`='$post_data->rsId'");
             }
           }
